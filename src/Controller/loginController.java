@@ -51,6 +51,7 @@ public class loginController implements Initializable {
         alertHeader = resourceBundle.getString("alertHeader");
         alertContext = resourceBundle.getString("alertContext");
         exitButton.setText(resourceBundle.getString("Exit"));
+        clearButton.setText(resourceBundle.getString("Clear"));
     }
 
     public void pressLogonButton(ActionEvent actionEvent) throws IOException {

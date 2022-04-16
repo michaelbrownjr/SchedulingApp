@@ -7,6 +7,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
@@ -18,7 +21,13 @@ public class Main extends Application {
 
     public static void main(String[] args){
         DBConnection.openConnection();
+        //Locale.setDefault(new Locale("fr"));
+        ResourceBundle rb = ResourceBundle.getBundle("Resources/Languages", Locale.getDefault());
+        if (Locale.getDefault() == Locale.FRENCH){
+            System.out.println(rb.getString("hello") + " " + rb.getString("world"));
+        } else System.out.println("hello world");
         launch(args);
+
         DBConnection.closeConnection();
 
     }
