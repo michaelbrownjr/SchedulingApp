@@ -3,35 +3,36 @@ package Model;
 import Helper.DBConnection;
 
 import java.sql.*;
+import java.time.ZoneId;
+import java.util.Locale;
 
 public class LogonSession {
 
     private static User currentUser;
+    private static Locale userLocale;
+    private static ZoneId userTimeZone;
+
 
     public static User getCurrentUser() {
         return currentUser;
     }
 
     // Login Attempt
-    public static Boolean login(String Username, String Password) {
-        try {
-            Statement statement = DBConnection.getConnection().createStatement();
+    public static Boolean login(String Username, String Password) throws SQLException{
+            Connection connect = DBConnection.getConnection();
             String loginCheck = "SELECT * FROM user WHERE userName='" + Username + "' AND password='" + Password + "'";
-            ResultSet rs = statement.executeQuery(loginCheck);
-            if (rs.next()) {
+            PreparedStatement sqlQuery = connect.prepareStatement(loginCheck);
+            ResultSet rs = sqlQuery.executeQuery(loginCheck);
+            if (!rs.next()) {
                 currentUser = new User();
                 currentUser.setUsername(rs.getString("userName"));
-                statement.close();
-
-                return Boolean.TRUE;
+                userLocale = Locale.getDefault();
+                userTimeZone = ZoneId.systemDefault();
+                sqlQuery.close();
+                return true;
 
             } else {
-                return Boolean.FALSE;
+                return false;
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return true;
     }
 }

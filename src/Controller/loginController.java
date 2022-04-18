@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 /*
@@ -54,7 +55,7 @@ public class loginController implements Initializable {
         clearButton.setText(resourceBundle.getString("Clear"));
     }
 
-    public void pressLogonButton(ActionEvent actionEvent) throws IOException {
+    public void pressLogonButton(ActionEvent actionEvent) throws IOException, SQLException {
         String userName = userTextBox.getText();
         String password = passwordTextBox.getText();
         boolean validUser = LogonSession.login(userName, password);
@@ -77,13 +78,12 @@ public class loginController implements Initializable {
         }
     }
 
-    public void pressClearButton(ActionEvent actionEvent) {
+    public void pressClearButton(ActionEvent actionEvent) throws IOException {
+        userTextBox.clear();
+        passwordTextBox.clear();
     }
 
     public void pressExitButton(ActionEvent actionEvent) {
-        Alerts.confirmDialog("Exit", "Are you sure you would like to exit the program?");
-        {
             System.exit(0);
-        }
     }
 }
