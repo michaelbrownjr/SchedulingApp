@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class addCustomerController implements Initializable {
@@ -49,7 +50,7 @@ public class addCustomerController implements Initializable {
      * @throws IOException
      */
     public void switchScreen(ActionEvent event, String switchPath) throws IOException {
-        Parent parent = FXMLLoader.load(getClass().getResource(switchPath));
+        Parent parent = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(switchPath)));
         Scene scene = new Scene(parent);
         Stage window = (Stage) ((Node)event.getSource()).getScene().getWindow();
         window.setScene(scene);
@@ -94,13 +95,12 @@ public class addCustomerController implements Initializable {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Customer added successfully!", clickOkay);
             alert.showAndWait();
             pressClearButton(event);
-            switchScreen(event, "/view_controller/customerView.fxml");
+            switchScreen(event, "/View/customerView.fxml");
         }
         else {
             ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.WARNING, "Failed to add Customer", clickOkay);
             alert.showAndWait();
-            return;
         }
 
     }
@@ -129,7 +129,7 @@ public class addCustomerController implements Initializable {
      * @throws IOException
      */
     public void pressBackButton(ActionEvent event) throws IOException {
-        switchScreen(event, "/view_controller/customerView.fxml");
+        switchScreen(event, "/View/customerView.fxml");
 
     }
 

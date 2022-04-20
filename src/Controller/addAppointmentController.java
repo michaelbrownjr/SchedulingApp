@@ -78,10 +78,10 @@ public class addAppointmentController {
     public void pressSaveButton(ActionEvent event) throws SQLException, IOException {
 
 
-        Boolean validStartDateTime = true;
-        Boolean validEndDateTime = true;
-        Boolean validOverlap = true;
-        Boolean validBusinessHours = true;
+        boolean validStartDateTime = true;
+        boolean validEndDateTime = true;
+        boolean validOverlap = true;
+        boolean validBusinessHours = true;
         String errorMessage = "";
 
 
@@ -159,7 +159,6 @@ public class addAppointmentController {
             ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
             Alert invalidInput = new Alert(Alert.AlertType.WARNING, errorMessage, clickOkay);
             invalidInput.showAndWait();
-            return;
 
         }
         else {
@@ -182,7 +181,7 @@ public class addAppointmentController {
                 ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Appointment added successfully!", clickOkay);
                 alert.showAndWait();
-                switchScreen(event, "/view_controller/appointmentView.fxml");
+                switchScreen(event, "/View/appointmentView.fxml");
             }
             else {
                 ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
@@ -221,7 +220,7 @@ public class addAppointmentController {
      * @throws IOException
      */
     public void pressBackButton(ActionEvent event) throws IOException {
-        switchScreen(event, "/view_controller/appointmentView.fxml");
+        switchScreen(event, "/View/appointmentView.fxml");
 
     }
 
@@ -250,15 +249,9 @@ public class addAppointmentController {
         // If startTime is before or after business hours
         // If end time is before or after business hours
         // if startTime is after endTime - these should cover all possible times entered and validate input.
-        if (startZonedDateTime.isBefore(startBusinessHours) | startZonedDateTime.isAfter(endBusinessHours) |
+        return !(startZonedDateTime.isBefore(startBusinessHours) | startZonedDateTime.isAfter(endBusinessHours) |
                 endZonedDateTime.isBefore(startBusinessHours) | endZonedDateTime.isAfter(endBusinessHours) |
-                startZonedDateTime.isAfter(endZonedDateTime)) {
-            return false;
-
-        }
-        else {
-            return true;
-        }
+                startZonedDateTime.isAfter(endZonedDateTime));
 
     }
 
@@ -288,13 +281,14 @@ public class addAppointmentController {
             return true;
         }
         else {
-            for (Appointment conflictAppt : possibleConflicts) {
+            for (int i = 0, possibleConflictsSize = possibleConflicts.size(); i < possibleConflictsSize; i++) {
+                Appointment conflictAppt = possibleConflicts.get(i);
 
                 LocalDateTime conflictStart = conflictAppt.getStartDateTime().toLocalDateTime();
                 LocalDateTime conflictEnd = conflictAppt.getEndDateTime().toLocalDateTime();
 
                 // Conflict starts before and Conflict ends any time after new appt ends - overlap
-                if( conflictStart.isBefore(startDateTime) & conflictEnd.isAfter(endDateTime)) {
+                if (conflictStart.isBefore(startDateTime) & conflictEnd.isAfter(endDateTime)) {
                     return false;
                 }
                 // ConflictAppt start time falls anywhere in the new appt
@@ -302,12 +296,7 @@ public class addAppointmentController {
                     return false;
                 }
                 // ConflictAppt end time falls anywhere in the new appt
-                if (conflictEnd.isBefore(endDateTime) & conflictEnd.isAfter(startDateTime)) {
-                    return false;
-                }
-                else {
-                    return true;
-                }
+                return !(conflictEnd.isBefore(endDateTime) & conflictEnd.isAfter(startDateTime));
 
             }
         }

@@ -20,7 +20,7 @@ public class LogonSession {
     // Login Attempt
     public static Boolean login(String Username, String Password) throws SQLException{
             Statement sqlQuery = DBConnection.getConnection().createStatement();
-            String loginCheck = "SELECT * FROM user WHERE User_Name='" + Username + "' AND Password='" + Password + "'";
+            String loginCheck = "SELECT * FROM users WHERE User_Name='" + Username + "' AND Password='" + Password + "'";
             ResultSet rs = sqlQuery.executeQuery(loginCheck);
             if (rs.next()) {
                 currentUser = new User(rs.getString("User_Name"), rs.getInt("User_ID"));

@@ -404,7 +404,7 @@ public class appointmentController implements Initializable {
      * @throws IOException
      */
     public void pressNewButton(ActionEvent event) throws IOException {
-        switchScreen(event, "/view_controller/addAppointmentPage.fxml");
+        switchScreen(event, "/View/addAppointmentView.fxml");
 
     }
 
@@ -423,7 +423,7 @@ public class appointmentController implements Initializable {
 
         if (result.get() == ButtonType.YES) {
             LogonSession.logOff();
-            switchScreen(event, "/view_controller/loginPage.fxml");
+            switchScreen(event, "/View/loginView.fxml");
         }
         else {
             return;
@@ -453,7 +453,7 @@ public class appointmentController implements Initializable {
         }
 
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/view_controller/editAppointmentPage.fxml"));
+        loader.setLocation(getClass().getResource("/View/editAppointmentView.fxml"));
         Parent parent = loader.load();
         Scene scene = new Scene(parent);
         // get the controller and load our selected appointment into it
@@ -473,7 +473,7 @@ public class appointmentController implements Initializable {
      */
     public void pressCustomerButton(ActionEvent event) throws IOException {
 
-        switchScreen(event, "/view_controller/customerView.fxml");
+        switchScreen(event, "/View/customerView.fxml");
 
     }
 
@@ -485,7 +485,7 @@ public class appointmentController implements Initializable {
      * @throws IOException
      */
     public void pressReportsPage(ActionEvent event) throws IOException {
-        switchScreen(event, "/view_controller/reportsPage.fxml");
+        switchScreen(event, "/View/reportsView.fxml");
 
     }
 

@@ -59,7 +59,7 @@ public class reportsController implements Initializable {
      * @throws IOException
      */
     public void pressBackButton(ActionEvent event) throws IOException {
-        switchScreen(event, "/view_controller/appointmentView.fxml");
+        switchScreen(event, "/View/appointmentView.fxml");
 
     }
 

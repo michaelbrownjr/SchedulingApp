@@ -238,7 +238,7 @@ public class editAppointmentController implements Initializable {
      * @throws IOException
      */
     public void pressBackButton(ActionEvent event) throws IOException {
-        switchScreen(event, "/view_controller/appointmentView.fxml");
+        switchScreen(event, "/View/appointmentView.fxml");
 
     }
 
@@ -355,7 +355,7 @@ public class editAppointmentController implements Initializable {
                 ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
                 Alert invalidInput = new Alert(Alert.AlertType.CONFIRMATION, "Appointment updated successfully!", clickOkay);
                 invalidInput.showAndWait();
-                switchScreen(event, "/view_controller/appointmentView.fxml");
+                switchScreen(event, "/View/appointmentView.fxml");
             }
             else {
                 ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
