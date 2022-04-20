@@ -12,51 +12,85 @@
             fx:controller="Controller.addAppointmentController"
             prefHeight="400.0" prefWidth="600.0">
     <children>
-        <Label layoutX="205.0" layoutY="20.0" text="Add Appointment">
-            <font>
-                <Font size="24.0" />
-            </font>
-        </Label>
-        <Label layoutX="141.0" layoutY="75.0" text="Customer">
-            <font>
-                <Font name="System Bold" size="16.0" />
-            </font></Label>
-        <TextField fx:id="CustomerField" editable="false" layoutX="269.0" layoutY="75.0" />
-        <Label layoutX="176.0" layoutY="110.0" text="Date">
-            <font>
-                <Font name="System Bold" size="16.0" />
-            </font></Label>
-        <DatePicker fx:id="Date" layoutX="269.0" layoutY="110.0" />
-        <Label layoutX="158.0" layoutY="180.0" text="Contact">
-            <font>
-                <Font name="System Bold" size="16.0" />
-            </font></Label>
-        <Label layoutX="175.0" layoutY="145.0" text="Time">
-            <font>
-                <Font name="System Bold" size="16.0" />
-            </font></Label>
-        <ComboBox fx:id="Time" layoutX="269.0" layoutY="145.0" prefWidth="150.0" />
-        <ComboBox fx:id="Contact" layoutX="269.0" layoutY="180.0" prefWidth="150.0" />
-        <Label layoutX="78.0" layoutY="250.0" text="Appointment Type">
-            <font>
-                <Font name="System Bold" size="16.0" />
-            </font></Label>
-        <Label layoutX="155.0" layoutY="215.0" text="Location">
-            <font>
-                <Font name="System Bold" size="16.0" />
-            </font></Label>
-        <TextField fx:id="ApptType" layoutX="270.0" layoutY="250.0" />
-        <Button layoutX="118.0" layoutY="309.0" mnemonicParsing="false" onAction="#handleSaveButton" text="Save">
-            <font>
-                <Font size="18.0" />
-            </font>
-        </Button>
-        <Button layoutX="407.0" layoutY="309.0" mnemonicParsing="false" onAction="#handleBackButton" text="Cancel">
-            <font>
-                <Font size="18.0" />
-            </font>
-        </Button>
-        <ComboBox fx:id="Locations" layoutX="269.0" layoutY="215.0" prefWidth="150.0" />
+        <VBox layoutX="42.0" layoutY="37.0" prefHeight="350.0" prefWidth="230.0">
+            <children>
+                <HBox prefHeight="43.0" prefWidth="230.0">
+                    <children>
+                        <Label prefHeight="18.0" prefWidth="103.0" text="Appointment ID: " />
+                        <TextField fx:id="appointmentIDTextBox" disable="true" />
+                    </children>
+                </HBox>
+                <HBox prefHeight="43.0" prefWidth="230.0">
+                    <children>
+                        <Label prefHeight="18.0" prefWidth="103.0" text="Title:" />
+                        <TextField fx:id="titleTextBox" prefHeight="26.0" prefWidth="150.0" />
+                    </children>
+                </HBox>
+                <HBox prefHeight="62.0" prefWidth="230.0">
+                    <children>
+                        <Label prefHeight="18.0" prefWidth="103.0" text="Description:" />
+                        <TextArea fx:id="descriptionTextBox" prefHeight="62.0" prefWidth="149.0" />
+                    </children>
+                </HBox>
+                <HBox prefHeight="43.0" prefWidth="230.0">
+                    <children>
+                        <Label prefHeight="18.0" prefWidth="103.0" text="Location:" />
+                        <TextField fx:id="locationTextBox" />
+                    </children>
+                </HBox>
+                <HBox prefHeight="43.0" prefWidth="230.0">
+                    <children>
+                        <Label prefHeight="18.0" prefWidth="103.0" text="Contact:" />
+                        <ComboBox fx:id="contactComboBox" prefWidth="150.0" />
+                    </children>
+                </HBox>
+                <HBox prefHeight="43.0" prefWidth="230.0">
+                    <children>
+                        <Label prefHeight="18.0" prefWidth="103.0" text="Type:" />
+                        <TextField fx:id="typeTextBox" />
+                    </children>
+                </HBox>
+                <HBox prefHeight="43.0" prefWidth="230.0">
+                    <children>
+                        <Label prefHeight="18.0" prefWidth="103.0" text="Customer ID:" />
+                        <ComboBox fx:id="customerComboBox" prefWidth="150.0" />
+                    </children>
+                </HBox>
+                <HBox prefHeight="43.0" prefWidth="230.0">
+                    <children>
+                        <Label prefHeight="18.0" prefWidth="103.0" text="User ID:" />
+                        <ComboBox fx:id="userComboBox" prefWidth="150.0" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+        <VBox layoutX="300.0" layoutY="37.0" prefHeight="187.0" prefWidth="230.0">
+            <children>
+                <HBox prefHeight="43.0" prefWidth="230.0">
+                    <children>
+                        <Label prefHeight="18.0" prefWidth="103.0" text="Date:" />
+                        <DatePicker fx:id="apptDatePicker" />
+                    </children>
+                </HBox>
+                <HBox prefHeight="43.0" prefWidth="230.0">
+                    <children>
+                        <Label prefHeight="18.0" prefWidth="109.0" text="Start Time (HH:MM)" />
+                        <TextField fx:id="startTimeTextBox" prefHeight="26.0" prefWidth="120.0" />
+                    </children>
+                </HBox>
+                <HBox prefHeight="43.0" prefWidth="230.0">
+                    <children>
+                        <Label prefHeight="18.0" prefWidth="109.0" text="End Time (HH:MM)" />
+                        <TextField fx:id="endTimeTextBox" prefHeight="26.0" prefWidth="120.0" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+        <Button fx:id="saveButton" layoutX="300.0" layoutY="224.0" mnemonicParsing="false" onAction="#pressSaveButton" prefHeight="25.0" prefWidth="80.0" text="Save" />
+        <Button fx:id="clearButton" layoutX="402.0" layoutY="224.0" mnemonicParsing="false" onAction="#pressClearButton" prefHeight="25.0" prefWidth="80.0" text="Clear" />
+        <Button fx:id="backButton" layoutX="506.0" layoutY="224.0" mnemonicParsing="false" onAction="#pressBackButton" prefHeight="25.0" prefWidth="80.0" text="Back" />
+        <Label fx:id="timeZoneLabel" layoutX="300.0" layoutY="280.0" prefHeight="18.0" prefWidth="197.0" text="Time Zone" />
+        <Label fx:id="businessHoursLabel" layoutX="300.0" layoutY="308.0" prefHeight="18.0" prefWidth="214.0" text="Business Hours: M-F  08:00-22:00 EST " />
     </children>
 
 </AnchorPane>

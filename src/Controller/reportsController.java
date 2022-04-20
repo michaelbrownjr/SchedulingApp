@@ -1,9 +1,14 @@
 package Controller;
 
 import Helper.DBConnection;
+import Model.AppointmentDB;
+import Model.ContactDB;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -11,122 +16,125 @@ import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
+import java.util.ResourceBundle;
 
-public class reportsController {
+public class reportsController implements Initializable {
     @FXML
-    TextArea apptTypesText;
-    @FXML TextArea apptTypesText1;
-    @FXML TextArea schedulesText;
-    @FXML TextArea schedulesText1;
-    @FXML TextArea schedulesText2;
-    @FXML TextArea schedulesText3;
-    @FXML TextArea totalAppointments;
-    @FXML TextArea totalAppointments1;
+    Button ApptByReportButton;
+    @FXML
+    Button contactScheduleReportButton;
+    @FXML
+    Button minsPerContactButton;
+    @FXML
+    TextArea reportTextField;
+    @FXML
+    Button backButton;
 
-    public void handleReportsApptTypes() throws SQLException {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime oneMonth = now.plusMonths(1);
-        String query = "SELECT description, count(*) as 'Number'\n" +
-                "FROM appointment\n" +
-                "WHERE start>='" + now + "' AND start<'" + oneMonth + "'\n" +
-                "GROUP BY description\n";
-
-        Statement st = DBConnection.getConnection().createStatement();
-        ResultSet rs = st.executeQuery(query);
-
-        StringBuffer appointmentType = new StringBuffer();
-        StringBuffer typeCount = new StringBuffer();
-        while (rs.next()) {
-
-            appointmentType.append(String.format("%s\n", rs.getString("description")));
-            typeCount.append(String.format("%d\n",rs.getInt("Number")));
-
-        }
-        st.close();
-
-        apptTypesText.setText(appointmentType.toString());
-        apptTypesText1.setText(typeCount.toString());
+    /**
+     * switchScreen
+     * loads new stage
+     *
+     * @param event Button Click
+     * @param switchPath path to new stage
+     * @throws IOException
+     */
+    public void switchScreen(ActionEvent event, String switchPath) throws IOException {
+        Parent parent = FXMLLoader.load(getClass().getResource(switchPath));
+        Scene scene = new Scene(parent);
+        Stage window = (Stage) ((Node)event.getSource()).getScene().getWindow();
+        window.setScene(scene);
+        window.show();
     }
 
-    public void handleSchedules() throws SQLException {
-        String query = "SELECT a.lastUpdateBy, a.description, c.customerName,start, end\n" +
-                "FROM appointment a\n" +
-                "JOIN customer c on c.customerId = a.customerID\n" +
-                "WHERE start>=NOW()\n" +
-                "GROUP BY a.lastUpdateBy, month(start),start\n" +
-                "ORDER BY customerName, start";
-
-
-        Statement st = DBConnection.getConnection().createStatement();
-        ResultSet rs = st.executeQuery(query);
-
-        StringBuffer consultant = new StringBuffer();
-        StringBuffer appointment = new StringBuffer();
-        StringBuffer start = new StringBuffer();
-        StringBuffer end = new StringBuffer();
-
-        while (rs.next()) {
-
-            consultant.append(String.format("%s\n", rs.getString("customerName")));
-            appointment.append(String.format("%s\n", rs.getString("description")));
-            start.append(String.format("%s\n", rs.getString("start")));
-            end.append(String.format("%s\n", rs.getString("end")));
-
-        }
-
-        st.close();
-        schedulesText.setText(consultant.toString());
-        schedulesText1.setText(appointment.toString());
-        schedulesText2.setText(start.toString());
-        schedulesText3.setText(end.toString());
+    /**
+     * pressBackButton
+     * navigates to previous stage
+     *
+     * @param event Button Click
+     * @throws IOException
+     */
+    public void pressBackButton(ActionEvent event) throws IOException {
+        switchScreen(event, "/view_controller/appointmentView.fxml");
 
     }
 
-    public void handleCountAppts() throws SQLException {
-        String query = "SELECT customer.customerName, count(appointment.customerId) as number\n" +
-                "FROM appointment\n" +
-                "JOIN customer on appointment.customerId = customer.customerID\n" +
-                "WHERE start>=NOW()\n" +
-                "GROUP BY customerName\n" +
-                "ORDER BY customerName";
+    /**
+     * pressApptByReportButton
+     * populates first report
+     *
+     * @param event Button Click
+     * @throws SQLException
+     */
+    public void pressApptByReportButton(ActionEvent event) throws SQLException {
 
+        ObservableList<String> reportStrings = AppointmentDB.reportTotalsByTypeAndMonth();
 
-        Statement st = DBConnection.getConnection().createStatement();
-        ResultSet rs = st.executeQuery(query);
-
-        StringBuffer customer = new StringBuffer();
-        StringBuffer count = new StringBuffer();
-
-
-        while (rs.next()) {
-
-            customer.append(String.format("%s\n", rs.getString("customerName")));
-            count.append(String.format("%s\n", rs.getString("number")));
-
-
+        for (String str : reportStrings) {
+            reportTextField.appendText(str);
         }
-
-        st.close();
-        totalAppointments.setText(customer.toString());
-        totalAppointments1.setText(count.toString());
 
     }
 
+    /**
+     * pressMinsPerContact
+     * populates second report
+     *
+     * @param event Button Click
+     * @throws SQLException
+     */
+    public void pressMinsPerContact(ActionEvent event ) throws SQLException {
+        ObservableList<String> contacts = ContactDB.getAllContactName();
 
-
-    public void handleBackButton(ActionEvent event) {
-        Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-        Object scene = null;
-        try {
-            scene = FXMLLoader.load(getClass().getResource("ViewAppointments.fxml"));
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (String contact: contacts) {
+            String contactID = ContactDB.findContactID(contact).toString();
+            reportTextField.appendText("Contact Name: " + contact + " ID: " + contactID + "\n");
+            reportTextField.appendText("    Total Mins scheduled: " + ContactDB.getMinutesScheduled(contactID) + "\n");
         }
-        stage.setScene(new Scene((Parent) scene));
-        stage.show();
+    }
+
+    /**
+     * pressContactSchedule
+     * populates 3rd report
+     *
+     * @param event Button Click
+     * @throws SQLException
+     */
+    public void pressContactSchedule(ActionEvent event) throws SQLException {
+
+        ObservableList<String> contacts = ContactDB.getAllContactName();
+
+        for (String contact : contacts) {
+            String contactID = ContactDB.findContactID(contact).toString();
+            reportTextField.appendText("Contact Name: " + contact + " ID: " + contactID + "\n");
+
+            ObservableList<String> appts = ContactDB.getContactAppts(contactID);
+            if(appts.isEmpty()) {
+                reportTextField.appendText("    No appointments for contact \n");
+            }
+            for (String appt : appts) {
+                reportTextField.appendText(appt);
+            }
+
+        }
+    }
+
+
+    /**
+     * initialize
+     * populates stage
+     *
+     * @param location location / time zone
+     * @param resources resources
+     */
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+
+
+
     }
 }

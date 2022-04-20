@@ -19,13 +19,12 @@ public class LogonSession {
 
     // Login Attempt
     public static Boolean login(String Username, String Password) throws SQLException{
-            Connection connect = DBConnection.getConnection();
-            String loginCheck = "SELECT * FROM user WHERE userName='" + Username + "' AND password='" + Password + "'";
-            PreparedStatement sqlQuery = connect.prepareStatement(loginCheck);
+            Statement sqlQuery = DBConnection.getConnection().createStatement();
+            String loginCheck = "SELECT * FROM user WHERE User_Name='" + Username + "' AND Password='" + Password + "'";
             ResultSet rs = sqlQuery.executeQuery(loginCheck);
-            if (!rs.next()) {
-                currentUser = new User();
-                currentUser.setUsername(rs.getString("userName"));
+            if (rs.next()) {
+                currentUser = new User(rs.getString("User_Name"), rs.getInt("User_ID"));
+                currentUser.setUsername(rs.getString("User_Name"));
                 userLocale = Locale.getDefault();
                 userTimeZone = ZoneId.systemDefault();
                 sqlQuery.close();
@@ -34,5 +33,17 @@ public class LogonSession {
             } else {
                 return false;
             }
+    }
+    public static Locale getUserLocale() {
+        return userLocale;
+
+    }
+    public static ZoneId getUserTimeZone() {
+        return userTimeZone;
+    }
+    public static void logOff() {
+        currentUser = null;
+        userLocale = null;
+        userTimeZone = null;
     }
 }

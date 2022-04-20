@@ -1,37 +1,32 @@
 package Model;
 
 import Helper.DBConnection;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
-import java.sql.ResultSet;
-import java.sql.Statement;
+import javax.sql.DataSource;
+import java.sql.*;
+import java.time.ZoneId;
+import java.util.Locale;
 
 public class UserDB {
-    private static User currentUser;
+    /**
+     * getAllUserID
+     * get a list of all user ID's from the DB
+     *
+     * @return List of all user ID's
+     * @throws SQLException
+     */
+    public static ObservableList<Integer> getAllUserID() throws SQLException {
+        ObservableList<Integer> allUserID = FXCollections.observableArrayList();
+        PreparedStatement sqlCommand = DBConnection.getConnection().prepareStatement("SELECT DISTINCT User_ID" +
+                " FROM users;");
+        ResultSet results = sqlCommand.executeQuery();
 
-    public static User getCurrentUser() {
-        return currentUser;
-    }
-
-    // Login Attempt
-    public static Boolean login(String Username, String Password) {
-        try {
-            Statement statement = DBConnection.getConnection().createStatement();
-            String loginCheck = "SELECT * FROM user WHERE userName='" + Username + "' AND password='" + Password + "'";
-            ResultSet rs = statement.executeQuery(loginCheck);
-            if (rs.next()) {
-                currentUser = new User();
-                currentUser.setUsername(rs.getString("userName"));
-                statement.close();
-
-                return Boolean.TRUE;
-
-            } else {
-                return Boolean.FALSE;
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        while ( results.next() ) {
+            allUserID.add(results.getInt("User_ID"));
         }
-        return true;
+        sqlCommand.close();
+        return allUserID;
     }
 }

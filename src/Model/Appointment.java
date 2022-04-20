@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -12,152 +13,185 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Appointment {
-    private final SimpleIntegerProperty aptID = new SimpleIntegerProperty();
-    private final SimpleIntegerProperty aptCustomerID = new SimpleIntegerProperty();
-    private final SimpleStringProperty aptStart = new SimpleStringProperty();
-    private final SimpleStringProperty aptEnd = new SimpleStringProperty();
-    private final SimpleStringProperty aptTitle = new SimpleStringProperty();
-    private final SimpleStringProperty aptDescription = new SimpleStringProperty();
-    private final SimpleStringProperty aptLocation = new SimpleStringProperty();
-    private final SimpleStringProperty aptContact = new SimpleStringProperty();
+    private Integer appointmentID;
+    private String title;
+    private String description;
+    private String location;
+    private String type;
+    private Timestamp startDateTime;
+    private Timestamp endDateTime;
+    private Timestamp createDate;
+    private String createBy;
+    private Timestamp lastUpdateDateTime;
+    private String lastUpdateBy;
+    private Integer customerID;
+    private Integer userID;
+    private Integer contactID;
+    private String contactName;
 
-    public Appointment() {}
+    /**
+     * Appointment constructor
+     *
+     * @param inputAppointmentID appointment ID (Primary Key).
+     * @param inputContactID  contact ID (Foregin Key).
+     * @param inputContactName Name of contact.
+     * @param inputCreateBy Name of user who created the appointment in the DB.
+     * @param inputCreateDate Date appointment was created.
+     * @param inputCustomerID customer ID (Foreign Key).
+     * @param inputDescription appointment description.
+     * @param inputEndDateTime end date/time of appointment.
+     * @param inputLastUpdateBy Last person to update the appointment.
+     * @param inputLastUpdateDateTime Time/Date of last update.
+     * @param inputLocation Appointment Location.
+     * @param inputStartDateTime Start Date/time of app
+     * @param inputTitle Appointment title
+     * @param inputType Appointment Type
+     * @param inputUserID User ID(Foreign Key).
+     *
+     */
+    public Appointment(Integer inputAppointmentID, String inputTitle, String inputDescription, String inputLocation,
+                       String inputType, Timestamp inputStartDateTime, Timestamp inputEndDateTime,
+                       Timestamp inputCreateDate, String inputCreateBy, Timestamp inputLastUpdateDateTime,
+                       String inputLastUpdateBy, Integer inputCustomerID, Integer inputUserID, Integer inputContactID,
+                       String inputContactName) {
 
-    public Appointment(int id, int customerid, String start, String end, String title, String description, String location, String contact) {
-        setAptID(id);
-        setAptCustomerID(customerid);
-        setAptStart(start);
-        setAptEnd(end);
-        setAptTitle(title);
-        setAptDescription(description);
-        setAptLocation(location);
-        setAptContact(contact);
+        appointmentID = inputAppointmentID;
+        title = inputTitle;
+        description = inputDescription;
+        location = inputLocation;
+        type = inputType;
+        startDateTime = inputStartDateTime;
+        endDateTime = inputEndDateTime;
+        createDate = inputCreateDate;
+        createBy = inputCreateBy;
+        lastUpdateDateTime = inputLastUpdateDateTime;
+        lastUpdateBy = inputLastUpdateBy;
+        customerID = inputCustomerID;
+        userID = inputUserID;
+        contactID = inputContactID;
+        contactName = inputContactName;
+
     }
 
-    public int getAptID() {
-        return aptID.get();
+
+    //
+    /**
+     * getter - Appointment ID
+     * @return ID of the appointment
+     */
+    public Integer getAppointmentID() {
+        return appointmentID;
     }
 
-    public SimpleIntegerProperty aptIDProperty() {
-        return aptID;
+    /**
+     * Getter - Title
+     * @return title of the appointment
+     */
+    public String getTitle() {
+        return title;
     }
 
-    public void setAptID(int aptID) {
-        this.aptID.set(aptID);
+    /**
+     * Getter - Description
+     * @return description of appointment
+     */
+    public String getDescription() {
+        return description;
     }
 
-    public int getAptCustomerID() {
-        return aptCustomerID.get();
+    /**
+     * Getter - Location
+     * @return location of appointment
+     */
+    public String getLocation() {
+        return location;
     }
 
-    public SimpleIntegerProperty aptCustomerIDProperty() {
-        return aptCustomerID;
+    /**
+     * Getter - Type
+     * @return type of the appointment
+     */
+    public String getType() {
+        return  type;
     }
 
-    public void setAptCustomerID(int aptCustomerID) {
-        this.aptCustomerID.set(aptCustomerID);
+    /**
+     * Getter - Start Date time
+     * @return start datetime of appointment
+     */
+    public Timestamp getStartDateTime() {
+        return startDateTime;
     }
 
-    public String getAptStart() {
-        return aptStart.get();
+    /**
+     * Getter - end date time
+     * @return end datetime of appointment
+     */
+    public Timestamp getEndDateTime() {
+        return endDateTime;
     }
 
-    public SimpleStringProperty aptStartProperty() {
-        return aptStart;
+    /**
+     * Getter - create date time
+     * @return create date of appointment
+     */
+    public Timestamp getCreateDate() {
+        return createDate;
     }
 
-    public void setAptStart(String aptStart) {
-        this.aptStart.set(aptStart);
+    /**
+     * Getter - created by
+     * @return who created appointment
+     */
+    public String getCreateBy() {
+        return createBy;
     }
 
-    public String getAptEnd() {
-        return aptEnd.get();
+    /**
+     * Getter - last update date time
+     * @return last update of appointment
+     */
+    public Timestamp getLastUpdateDateTime() {
+        return lastUpdateDateTime;
     }
 
-    public SimpleStringProperty aptEndProperty() {
-        return aptEnd;
+    /**
+     * Getter - last updated by
+     * @return datetime of last update
+     */
+    public String getLastUpdateBy() {
+        return lastUpdateBy;
     }
 
-    public void setAptEnd(String aptEnd) {
-        this.aptEnd.set(aptEnd);
+    /**
+     * getter - customer ID
+     * @return customer ID
+     */
+    public Integer getCustomerID() {
+        return customerID;
     }
 
-    public String getAptTitle() {
-        return aptTitle.get();
+    /**
+     * Getter - user ID
+     * @return user ID
+     */
+    public Integer getUserID() {
+        return userID;
     }
 
-    public SimpleStringProperty aptTitleProperty() {
-        return aptTitle;
+    /**
+     * Getter - contact ID
+     * @return contact ID
+     */
+    public Integer getContactID() {
+        return contactID;
     }
 
-    public void setAptTitle(String aptTitle) {
-        this.aptTitle.set(aptTitle);
-    }
-
-    public String getAptDescription() {
-        return aptDescription.get();
-    }
-
-    public SimpleStringProperty aptDescriptionProperty() {
-        return aptDescription;
-    }
-
-    public void setAptDescription(String aptDescription) {
-        this.aptDescription.set(aptDescription);
-    }
-
-    public String getAptLocation() {
-        return aptLocation.get();
-    }
-
-    public SimpleStringProperty aptLocationProperty() {
-        return aptLocation;
-    }
-
-    public void setAptLocation(String aptLocation) {
-        this.aptLocation.set(aptLocation);
-    }
-
-    public String getAptContact() {
-        return aptContact.get();
-    }
-
-    public SimpleStringProperty aptContactProperty() {
-        return aptContact;
-    }
-
-    public void setAptContact(String aptContact) {
-        this.aptContact.set(aptContact);
-    }
-
-    public String getAptTime() {
-        DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
-        LocalDateTime localDT = LocalDateTime.parse(this.aptStart.getValue(), dtFormat);
-        ZonedDateTime utcTime = localDT.atZone(ZoneId.of("UTC"));
-        ZoneId zoneID = ZoneId.systemDefault();
-        ZonedDateTime utcDate = utcTime.withZoneSameInstant(zoneID);
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("kk:mm");
-        LocalTime localTime = LocalTime.parse(utcDate.toString().substring(11,16), timeFormatter);
-        return localTime.toString();
-    }
-
-    public StringProperty getAptEndProperty() {
-        DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
-        LocalDateTime localDT = LocalDateTime.parse(this.aptEnd.getValue(), dtFormat);
-        ZonedDateTime utcTime = localDT.atZone(ZoneId.of("UTC"));
-        ZoneId zoneID = ZoneId.systemDefault();
-        ZonedDateTime utcDate = utcTime.withZoneSameInstant(zoneID);
-        StringProperty aptEnd = new SimpleStringProperty(utcDate.toLocalDateTime().toString());
-        return aptEnd;
-    }
-
-    public StringProperty getAptStartProperty() {
-        DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
-        LocalDateTime localDT = LocalDateTime.parse(this.aptStart.getValue(), dtFormat);
-        ZonedDateTime utcTime = localDT.atZone(ZoneId.of("UTC"));
-        ZoneId zoneID = ZoneId.systemDefault();
-        ZonedDateTime utcDate = utcTime.withZoneSameInstant(zoneID);
-        StringProperty aptStart = new SimpleStringProperty(utcDate.toLocalDateTime().toString());
-        return aptStart;
+    /**
+     * Getter - contact name
+     * @return name of contact
+     */
+    public String getContactName() {
+        return contactName;
     }
 }

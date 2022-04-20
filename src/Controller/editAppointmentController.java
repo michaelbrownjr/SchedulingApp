@@ -1,149 +1,383 @@
 package Controller;
 
 import Helper.Alerts;
-import Model.Appointment;
-import Model.AppointmentDB;
-import Model.Customer;
+import Model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ResourceBundle;
 
-public class editAppointmentController {
-    public Customer selectedCustomer;
-    public Appointment selectedAppointment;
+public class editAppointmentController implements Initializable {
+
     @FXML
-    private TextField CustomerField;
-    @FXML private ComboBox Time;
-    @FXML private ComboBox Contact;
-    @FXML private DatePicker Date;
-    @FXML private ComboBox Locations;
-    @FXML private TextField ApptType;
+    TextField appointmentIDTextBox;
+    @FXML
+    TextField titleTextBox;
+    @FXML
+    TextArea descriptionTextBox;
+    @FXML
+    TextField locationTextBox;
+    @FXML
+    ComboBox<String> contactComboBox;
+    @FXML
+    TextField typeTextBox;
+    @FXML
+    ComboBox<Integer> customerComboBox;
+    @FXML
+    ComboBox<Integer> userComboBox;
+    @FXML
+    DatePicker apptDatePicker;
+    @FXML
+    TextField startTimeTextBox;
+    @FXML
+    TextField endTimeTextBox;
+    @FXML
+    Button saveButton;
+    @FXML
+    Button clearButton;
+    @FXML
+    Button backButton;
+    @FXML
+    Label timeZoneLabel;
 
-    private final ObservableList<String> contacts = FXCollections.observableArrayList("Ina", "John", "Zack");
-    private final ObservableList<String> times = FXCollections.observableArrayList("08:00", "09:30", "11:00", "12:30", "14:00", "16:30");
-    private final ObservableList<String> locations = FXCollections.observableArrayList("Teams","Room A", "Room B", "Room C");
-    private String error;
 
-
-    public void setCustomer(Customer selectedCustomer) {
-        this.selectedCustomer = selectedCustomer;
-        CustomerField.setText(selectedCustomer.getCustomerName());
-        Time.setItems(times);
-        Contact.setItems(contacts);
-        Locations.setItems(locations);
+    /**
+     * switchScreen
+     * loads new stage
+     *
+     * @param event Button Click
+     * @param switchPath path to new stage
+     * @throws IOException
+     */
+    public void switchScreen(ActionEvent event, String switchPath) throws IOException {
+        Parent parent = FXMLLoader.load(getClass().getResource(switchPath));
+        Scene scene = new Scene(parent);
+        Stage window = (Stage) ((Node)event.getSource()).getScene().getWindow();
+        window.setScene(scene);
+        window.show();
     }
 
-    @FXML public void handleSaveButton(ActionEvent event) throws IOException, SQLException {
-        LocalDate aptDate = Date.getValue();
-        int aptTime = Time.getSelectionModel().getSelectedIndex();
-        int aptContact = Contact.getSelectionModel().getSelectedIndex();
-        int aptLocation = Locations.getSelectionModel().getSelectedIndex();
-        LocalDateTime formattedTime = AppointmentDB.convertToDateAndTime(aptDate, Time.getSelectionModel().getSelectedItem().toString());
-        if (!checkDate(aptDate) || !checkTime(aptTime) || !checkContact(aptContact) || !checkLocation(aptLocation) || !checkType()) {
-            System.out.println(error);
-            Alerts.infoDialog("Error", "Please fix the following error:", error);
+    /**
+     * initData
+     * takes passed object from previous stage and populates it in this stage
+     *
+     * @param selectedAppt appt from previous stage
+     * @throws SQLException
+     */
+    public void initData(Appointment selectedAppt) throws SQLException {
+
+
+        // get the values to populate into the Date picker
+        try {
+            LocalDate apptDate = selectedAppt.getStartDateTime().toLocalDateTime().toLocalDate();
         }
-        if (AppointmentDB.checkOverlappingAppointment(selectedCustomer.getCustomerID(), formattedTime) == Boolean.FALSE){
+        catch (NullPointerException error) {
+            ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+            Alert invalidInput = new Alert(Alert.AlertType.WARNING, "No selected Date", clickOkay);
+            invalidInput.showAndWait();
             return;
         }
-        else {
-            System.out.println("Success");
-            Integer addAppointmentID = selectedAppointment.getAptID();
-            String addContact = Contact.getSelectionModel().getSelectedItem().toString();
-            String addLocation = Locations.getSelectionModel().getSelectedItem().toString();
-            String addType = ApptType.getText();
-            AppointmentDB.updateAppointment(addAppointmentID, selectedCustomer.getCustomerID(), formattedTime, addContact, addLocation, addType);
-            Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-            Object scene = FXMLLoader.load(getClass().getResource("ViewAppointments.fxml"));
-            stage.setScene(new Scene((Parent) scene));
-            stage.show();
-        }
+        ZonedDateTime startDateTimeUTC = selectedAppt.getStartDateTime().toInstant().atZone(ZoneOffset.UTC);
+        ZonedDateTime endDateTimeUTC = selectedAppt.getEndDateTime().toInstant().atZone(ZoneOffset.UTC);
+
+        ZonedDateTime localStartDateTime = startDateTimeUTC.withZoneSameInstant(LogonSession.getUserTimeZone());
+        ZonedDateTime localEndDateTime = endDateTimeUTC.withZoneSameInstant(LogonSession.getUserTimeZone());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        String localStartString = localStartDateTime.format(formatter);
+        String localEndString = localEndDateTime.format(formatter);
+
+        // populate values
+        appointmentIDTextBox.setText(selectedAppt.getAppointmentID().toString());
+        titleTextBox.setText(selectedAppt.getTitle());
+        descriptionTextBox.setText(selectedAppt.getDescription());
+        locationTextBox.setText(selectedAppt.getLocation());
+        contactComboBox.setItems(ContactDB.getAllContactName());
+        contactComboBox.getSelectionModel().select(selectedAppt.getContactName());
+        typeTextBox.setText(selectedAppt.getType());
+        customerComboBox.setItems(CustomerDB.getAllCustomerID());
+        customerComboBox.getSelectionModel().select(selectedAppt.getCustomerID());
+        userComboBox.setItems(UserDB.getAllUserID());
+        userComboBox.getSelectionModel().select(selectedAppt.getUserID());
+        apptDatePicker.setValue(selectedAppt.getStartDateTime().toLocalDateTime().toLocalDate());
+        startTimeTextBox.setText(localStartString);
+        endTimeTextBox.setText(localEndString);
+
+        // Set date/ times - handle time zones
+
     }
 
-    public void handleBackButton(ActionEvent event) {
-        Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-        Object scene = null;
+    /**
+     * validateBusinessHours
+     * input validation
+     *
+     * @param startDateTime start date time
+     * @param endDateTime end date time
+     * @param apptDate appointment date
+     * @return Boolean for successful operation
+     */
+    public Boolean validateBusinessHours(LocalDateTime startDateTime, LocalDateTime endDateTime, LocalDate apptDate) {
+        // (8am to 10pm EST, Not including weekends)
+        // Turn into zonedDateTimeObject, so we can evaluate whatever time was entered in user time zone against EST
+
+        ZonedDateTime startZonedDateTime = ZonedDateTime.of(startDateTime, LogonSession.getUserTimeZone());
+        ZonedDateTime endZonedDateTime = ZonedDateTime.of(endDateTime, LogonSession.getUserTimeZone());
+
+        ZonedDateTime startBusinessHours = ZonedDateTime.of(apptDate, LocalTime.of(8,0),
+                ZoneId.of("America/New_York"));
+        ZonedDateTime endBusinessHours = ZonedDateTime.of(apptDate, LocalTime.of(22, 0),
+                ZoneId.of("America/New_York"));
+
+        // If startTime is before or after business hours
+        // If end time is before or after business hours
+        // if startTime is after endTime - these should cover all possible times entered and validate input.
+        if (startZonedDateTime.isBefore(startBusinessHours) | startZonedDateTime.isAfter(endBusinessHours) |
+                endZonedDateTime.isBefore(startBusinessHours) | endZonedDateTime.isAfter(endBusinessHours) |
+                startZonedDateTime.isAfter(endZonedDateTime)) {
+            return false;
+
+        }
+        else {
+            return true;
+        }
+
+    }
+
+    /**
+     * validateCustomerOverlap
+     * input validation
+     *
+     * @param inputCustomerID Customer ID
+     * @param startDateTime Start date time for appointment
+     * @param endDateTime end date time for appointment
+     * @param apptDate appointment date
+     * @return Boolean indicating if input is valid
+     * @throws SQLException
+     */
+    public Boolean validateCustomerOverlap(Integer inputCustomerID, LocalDateTime startDateTime,
+                                           LocalDateTime endDateTime, LocalDate apptDate) throws SQLException {
+
+        // Get list of appointments that might have conflicts
+        ObservableList<Appointment> possibleConflicts = AppointmentDB.getCustomerFilteredAppointments(apptDate,
+                inputCustomerID);
+        // for each possible conflict, evaluate:
+        // if conflictApptStart is before newApptstart and conflictApptEnd is after newApptStart(starts before ends after)
+        // if conflictApptStart is before newApptEnd & conflictApptStart after newApptStart (startime anywhere in appt)
+        // if endtime is before end and endtime is after start (endtime falls anywhere in appt)
+        if (possibleConflicts.isEmpty()) {
+            return true;
+        }
+        else {
+            for (Appointment conflictAppt : possibleConflicts) {
+
+                LocalDateTime conflictStart = conflictAppt.getStartDateTime().toLocalDateTime();
+                LocalDateTime conflictEnd = conflictAppt.getEndDateTime().toLocalDateTime();
+
+                // Conflict starts before and Conflict ends any time after new appt ends - overlap
+                if( conflictStart.isBefore(startDateTime) & conflictEnd.isAfter(endDateTime)) {
+                    return false;
+                }
+                // ConflictAppt start time falls anywhere in the new appt
+                if (conflictStart.isBefore(endDateTime) & conflictStart.isAfter(startDateTime)) {
+                    return false;
+                }
+                // ConflictAppt end time falls anywhere in the new appt
+                if (conflictEnd.isBefore(endDateTime) & conflictEnd.isAfter(startDateTime)) {
+                    return false;
+                }
+                else {
+                    return true;
+                }
+
+            }
+        }
+        return true;
+
+    }
+
+    /**
+     * pressClearButton
+     * clears fields on screen
+     *
+     * @param event Button Click
+     */
+    public void pressClearButton(ActionEvent event) {
+        titleTextBox.clear();
+        descriptionTextBox.clear();
+        locationTextBox.clear();
+        typeTextBox.clear();
+        startTimeTextBox.clear();
+        endTimeTextBox.clear();
+        contactComboBox.getSelectionModel().clearSelection();
+        customerComboBox.getSelectionModel().clearSelection();
+        userComboBox.getSelectionModel().clearSelection();
+        apptDatePicker.getEditor().clear();
+
+    }
+
+    /**
+     * pressBackButton
+     * loads previous stage
+     *
+     * @param event Button Click
+     * @throws IOException
+     */
+    public void pressBackButton(ActionEvent event) throws IOException {
+        switchScreen(event, "/view_controller/appointmentView.fxml");
+
+    }
+
+    /**
+     * pressSaveButton
+     * saves appointment
+     *
+     * @param event Button Click
+     * @throws SQLException
+     * @throws IOException
+     */
+    public void pressSaveButton(ActionEvent event) throws SQLException, IOException {
+
+        Boolean validStartDateTime = true;
+        Boolean validEndDateTime = true;
+        Boolean validOverlap = true;
+        Boolean validBusinessHours = true;
+        String errorMessage = "";
+
+        Integer apptID = Integer.parseInt(appointmentIDTextBox.getText());
+        String title = titleTextBox.getText();
+        String description = descriptionTextBox.getText();
+        String location = locationTextBox.getText();
+        String contactName = contactComboBox.getValue();
+        String type = typeTextBox.getText();
+        Integer customerID = customerComboBox.getValue();
+        Integer userID = userComboBox.getValue();
+        LocalDate apptDate = apptDatePicker.getValue();
+        LocalDateTime endDateTime = null;
+        LocalDateTime startDateTime = null;
+        ZonedDateTime zonedEndDateTime = null;
+        ZonedDateTime zonedStartDateTime = null;
+
+        // take user selected Contact_Name and find the contact_ID FK so we can add to appointments table.
+        Integer contactID = ContactDB.findContactID(contactName);
+
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+
+        // INPUT VALIDATION: catch parsing errors for start and enddatetime
         try {
-            scene = FXMLLoader.load(getClass().getResource("ViewAppointments.fxml"));
-        } catch (IOException e) {
-            e.printStackTrace();
+            startDateTime = LocalDateTime.of(apptDatePicker.getValue(),
+                    LocalTime.parse(startTimeTextBox.getText(), formatter));
+            validStartDateTime = true;
         }
-        stage.setScene(new Scene((Parent) scene));
-        stage.show();
-    }
+        catch(DateTimeParseException error) {
+            validStartDateTime = false;
+            errorMessage += "Invalid Start time. Please ensure proper format HH:MM, including leading 0's.\n";
+        }
 
-    private boolean checkType() {
-        if(ApptType.getText().isEmpty()) {
-            error = "Please add an Appointment Type";
-            return false;
-        } else {
-            return true;
+        try {
+            endDateTime = LocalDateTime.of(apptDatePicker.getValue(),
+                    LocalTime.parse(endTimeTextBox.getText(), formatter));
+            validEndDateTime = true;
         }
-    }
+        catch(DateTimeParseException error) {
+            validEndDateTime = false;
+            errorMessage += "Invalid End time. Please ensure proper format HH:MM, including leading 0's.\n";
+        }
 
-    private boolean checkLocation(int aptLocation) {
-        if(aptLocation == -1) {
-            error = "Please choose a location";
-            return false;
-        } else {
-            return true;
-        }
-    }
+        // INPUT VALIDATION: Ensure all fields have been entered
+        if (title.isBlank() || description.isBlank() || location.isBlank() || contactName == null || type.isBlank() ||
+                customerID == null || userID == null || apptDate == null || endDateTime == null ||
+                startDateTime == null) {
 
-    private boolean checkContact(int aptContact) {
-        if(aptContact == -1) {
-            error = "Please choose a contact";
-            return false;
-        } else {
-            return true;
-        }
-    }
+            errorMessage += "Please ensure a value has been entered in all fields.\n";
+            // Throw error
+            ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+            Alert invalidInput = new Alert(Alert.AlertType.WARNING, errorMessage, clickOkay);
+            invalidInput.showAndWait();
+            return;
 
-    private boolean checkTime(int aptTime) {
-        if(aptTime == -1) {
-            error = "Please choose a time";
-            return false;
-        } else {
-            return true;
         }
-    }
 
-    private boolean checkDate(LocalDate aptDate) {
-        if(aptDate == null) {
-            error = "Please choose a date";
-            return false;
+        // INPUT VALIDATION: check that business hours are valid and there is no double booked customers.
+        validBusinessHours = validateBusinessHours(startDateTime, endDateTime, apptDate);
+        validOverlap = validateCustomerOverlap(customerID, startDateTime, endDateTime, apptDate);
+
+        // INPUT VALIDATION: set corresponding error for user
+        if (!validBusinessHours) {
+            errorMessage += "Invalid Business Hours.(8am to 10pm EST)\n";
         }
-        if (aptDate.isBefore(LocalDate.now()))
-        {
-            error = "Please choose a future date";
-            return false;
+        if (!validOverlap) {
+            errorMessage += "Invalid Customer Overlap. Cannot double book customers.\n";
         }
-        if(aptDate.getDayOfWeek() == DayOfWeek.SATURDAY || aptDate.getDayOfWeek() == DayOfWeek.SUNDAY ){
-            error = "Please choose a weekday";
-            return false;
+
+
+        // INPUT VALIDATION - if any requirements are false, show error and end method.
+        if (!validOverlap || !validBusinessHours || !validEndDateTime || !validStartDateTime) {
+            ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+            Alert invalidInput = new Alert(Alert.AlertType.WARNING, errorMessage, clickOkay);
+            invalidInput.showAndWait();
+            return;
+
         }
         else {
-            return true;
+            // if input is valid we insert into DB and display success and clear.
+            // prep start and endTime by turning them into a zonedDateTime so we can enter in the DB in UTC.
+            zonedStartDateTime = ZonedDateTime.of(startDateTime, LogonSession.getUserTimeZone());
+            zonedEndDateTime = ZonedDateTime.of(endDateTime, LogonSession.getUserTimeZone());
+            String loggedOnUserName = LogonSession.getCurrentUser().getUsername();
+
+            // Convert to UTC
+            zonedStartDateTime = zonedStartDateTime.withZoneSameInstant(ZoneOffset.UTC);
+            zonedEndDateTime = zonedEndDateTime.withZoneSameInstant(ZoneOffset.UTC);
+
+            // Add appt to DB
+            Boolean success = AppointmentDB.updateAppointment(apptID, title, description, location, type, zonedStartDateTime,
+                    zonedEndDateTime, loggedOnUserName, customerID, userID, contactID );
+
+            // notify user we successfully added to DB, and navigate back.
+            if (success) {
+                ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+                Alert invalidInput = new Alert(Alert.AlertType.CONFIRMATION, "Appointment updated successfully!", clickOkay);
+                invalidInput.showAndWait();
+                switchScreen(event, "/view_controller/appointmentView.fxml");
+            }
+            else {
+                ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+                Alert invalidInput = new Alert(Alert.AlertType.WARNING, "failed to Update appointment", clickOkay);
+                invalidInput.showAndWait();
+            }
+
         }
+
     }
 
+    /**
+     * initialize
+     * initializes stage
+     *
+     * @param url stage path
+     * @param resourceBundle resources
+     */
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
 
-    public void setAppointment(Appointment selectedAppointment) {
-        this.selectedAppointment = selectedAppointment;
+        timeZoneLabel.setText(LogonSession.getUserTimeZone().toString());
+
     }
 }

@@ -12,63 +12,27 @@
             fx:controller="Controller.reportsController"
             prefHeight="400.0" prefWidth="600.0">
     <children>
-        <Label layoutX="259.0" layoutY="14.0" text="Reports">
-            <font>
-                <Font size="24.0" />
-            </font>
-        </Label>
-        <TabPane layoutX="14.0" layoutY="55.0" prefHeight="369.0" prefWidth="574.0" style="-fx-border-color: #000000;" tabClosingPolicy="UNAVAILABLE">
-            <tabs>
-                <Tab text="Appointment Types">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="286.0" prefWidth="572.0">
-                            <children>
-                                <TextArea fx:id="apptTypesText" editable="false" layoutX="153.0" layoutY="49.0" prefHeight="275.0" prefWidth="133.0" />
-                                <Label layoutX="162.0" layoutY="14.0" text="Appointment Types this Month">
-                                    <font>
-                                        <Font size="18.0" />
-                                    </font>
-                                </Label>
-                                <TextArea fx:id="apptTypesText1" editable="false" layoutX="294.0" layoutY="49.0" prefHeight="275.0" prefWidth="88.0" />
-                            </children></AnchorPane>
-                    </content>
-                </Tab>
-                <Tab onSelectionChanged="#handleSchedules" text="Schedules">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="345.0" prefWidth="572.0">
-                            <children>
-                                <Label layoutX="246.0" layoutY="14.0" text="Schedules">
-                                    <font>
-                                        <Font size="18.0" />
-                                    </font>
-                                </Label>
-                                <TextArea fx:id="schedulesText" editable="false" layoutX="11.0" layoutY="49.0" prefHeight="275.0" prefWidth="120.0" />
-                                <TextArea fx:id="schedulesText1" editable="false" layoutX="137.0" layoutY="49.0" prefHeight="275.0" prefWidth="130.0" />
-                                <TextArea fx:id="schedulesText2" editable="false" layoutX="270.0" layoutY="49.0" prefHeight="275.0" prefWidth="146.0" />
-                                <TextArea fx:id="schedulesText3" editable="false" layoutX="418.0" layoutY="49.0" prefHeight="275.0" prefWidth="150.0" />
-                            </children></AnchorPane>
-                    </content>
-                </Tab>
-                <Tab onSelectionChanged="#handleCountAppts" text="Customer Future Appoinments">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                            <children>
-                                <Label layoutX="156.0" layoutY="14.0" text="Customer Future Appoinments">
-                                    <font>
-                                        <Font size="18.0" />
-                                    </font>
-                                </Label>
-                                <TextArea fx:id="totalAppointments" layoutX="187.0" layoutY="49.0" prefHeight="275.0" prefWidth="91.0" />
-                                <TextArea fx:id="totalAppointments1" layoutX="287.0" layoutY="49.0" prefHeight="275.0" prefWidth="91.0" />
-                            </children></AnchorPane>
-                    </content>
-                </Tab>
-            </tabs>
-        </TabPane>
-        <Button layoutX="531.0" layoutY="436.0" mnemonicParsing="false" onAction="#handleBackButton" text="Back">
-            <font>
-                <Font size="18.0" />
-            </font></Button>
+        <HBox layoutX="14.0" layoutY="335.0" prefHeight="50.0" prefWidth="477.0">
+            <children>
+                <Button fx:id="ApptByReportButton" mnemonicParsing="false" onAction="#pressApptByReportButton" prefHeight="50.0" prefWidth="136.0" text="Customer Appointments by type and month " textOverrun="CLIP" wrapText="true">
+                    <font>
+                        <Font size="10.0" />
+                    </font>
+                </Button>
+                <Button fx:id="contactScheduleReportButton" mnemonicParsing="false" onAction="#pressContactSchedule" prefHeight="50.0" prefWidth="136.0" text="Contact Schedule " textOverrun="CLIP" wrapText="true">
+                    <font>
+                        <Font size="10.0" />
+                    </font>
+                </Button>
+                <Button fx:id="minsPerContactButton" mnemonicParsing="false" onAction="#pressMinsPerContact" prefHeight="50.0" prefWidth="136.0" text="Minutes scheduled per Contact " textOverrun="CLIP" wrapText="true">
+                    <font>
+                        <Font size="10.0" />
+                    </font>
+                </Button>
+            </children>
+        </HBox>
+        <Button fx:id="backButton" layoutX="514.0" layoutY="335.0" mnemonicParsing="false" onAction="#pressBackButton" prefHeight="26.0" prefWidth="71.0" text="Back" />
+        <TextArea fx:id="reportTextField" editable="false" layoutX="23.0" layoutY="31.0" prefHeight="288.0" prefWidth="468.0" wrapText="true" />
     </children>
 
 </AnchorPane>

@@ -5,94 +5,103 @@ import javafx.beans.property.SimpleStringProperty;
 
 public class Customer {
 
-    private final SimpleIntegerProperty customerID = new SimpleIntegerProperty();
-    private final SimpleStringProperty customerName = new SimpleStringProperty();
-    private final SimpleStringProperty customerAddress = new SimpleStringProperty();
-    private final SimpleStringProperty customerCity = new SimpleStringProperty();
-    private final SimpleStringProperty customerZip = new SimpleStringProperty();
-    private final SimpleStringProperty customerPhone = new SimpleStringProperty();
+    private Integer ID;
+    private String name;
+    private String address;
+    private String postalCode;
+    private String phoneNumber;
+    private Integer divisionID;
+    private String division;
+    private String country;
 
-    public Customer() {
+    /**
+     * Constructor for Customer Object
+     *
+     * @param inputCustomerID ID of customer
+     * @param inputName name of customer
+     * @param inputAddress address of customer
+     * @param inputPostalCode postal code of customer
+     * @param inputPhoneNumber phone number of customer
+     * @param inputDivision division of customer
+     * @param inputDivID Division ID of customer
+     * @param inputCountry Country of customer
+     */
+    public Customer(Integer inputCustomerID, String inputName, String inputAddress, String inputPostalCode,
+                    String inputPhoneNumber, String inputDivision, Integer inputDivID, String inputCountry) {
+        ID = inputCustomerID;
+        name = inputName;
+        address = inputAddress;
+        postalCode = inputPostalCode;
+        phoneNumber = inputPhoneNumber;
+        division = inputDivision;
+        divisionID = inputDivID;
+        country = inputCountry;
+
     }
 
-    public Customer(int id, String name, String address,String city, String zip, String phone) {
-        setCustomerID(id);
-        setCustomerName(name);
-        setCustomerAddress(address);
-        setCustomerCity(city);
-        setCustomerZip(zip);
-        setCustomerPhone(phone);
+    // Getters
+
+    /**
+     * Getter - customer ID
+     * @return customer ID
+     */
+    public Integer getCustomerID() {
+        return ID;
     }
 
-    public int getCustomerID() {
-        return customerID.get();
+    /**
+     * Getter - name
+     * @return name of customer
+     */
+    public String getName() {
+        return name;
     }
 
-    public SimpleIntegerProperty customerIDProperty() {
-        return customerID;
+    /**
+     * Getter - Address
+     * @return address of customer
+     */
+    public String getAddress() {
+        return address;
     }
 
-    public void setCustomerID(int customerID) {
-        this.customerID.set(customerID);
+    /**
+     * Getter - postal code
+     * @return postal code of customer
+     */
+    public String getPostalCode() {
+        return postalCode;
     }
 
-    public String getCustomerName() {
-        return customerName.get();
+    /**
+     * Getter - Phone number
+     * @return phone number of customer
+     */
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public SimpleStringProperty customerNameProperty() {
-        return customerName;
+    /**
+     * Getter - Division
+     * @return customers division
+     */
+    public String getDivision() {
+        return division;
     }
 
-    public void setCustomerName(String customerName) {
-        this.customerName.set(customerName);
+    /**
+     * Getter - Country
+     * @return country of customer
+     */
+    public String getCountry() {
+        return country;
     }
 
-    public String getCustomerAddress() {
-        return customerAddress.get();
-    }
-
-    public SimpleStringProperty customerAddressProperty() {
-        return customerAddress;
-    }
-
-    public void setCustomerAddress(String customerAddress) {
-        this.customerAddress.set(customerAddress);
-    }
-
-    public String getCustomerCity() {
-        return customerCity.get();
-    }
-
-    public SimpleStringProperty customerCityProperty() {
-        return customerCity;
-    }
-
-    public void setCustomerCity(String customerCity) {
-        this.customerCity.set(customerCity);
-    }
-
-    public String getCustomerZip() {
-        return customerZip.get();
-    }
-
-    public SimpleStringProperty customerZipProperty() {
-        return customerZip;
-    }
-
-    public void setCustomerZip(String customerZip) {
-        this.customerZip.set(customerZip);
-    }
-
-    public String getCustomerPhone() {
-        return customerPhone.get();
-    }
-
-    public SimpleStringProperty customerPhoneProperty() {
-        return customerPhone;
-    }
-
-    public void setCustomerPhone(String customerPhone) {
-        this.customerPhone.set(customerPhone);
+    /**
+     * Getter - Division ID
+     * @return division of customer
+     */
+    public Integer getDivisionID() {
+        return divisionID;
     }
 }

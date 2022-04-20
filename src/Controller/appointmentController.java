@@ -1,7 +1,10 @@
 package Controller;
 
 import Helper.Alerts;
+import Helper.DBConnection;
 import Model.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,198 +20,553 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class appointmentController implements Initializable {
 
-    private Parent scene;
-
     @FXML
-    private TableView<Customer> customerTable;
-    @FXML private TableColumn<Customer, Integer> customerId;
-    @FXML private TableColumn<Customer, String> customerName;
-    @FXML private javafx.scene.control.Label CustomerLabel;
-    @FXML private TableView<Appointment> aptTable;
-    @FXML private TableColumn<Appointment, String> aptDescription;
-    @FXML private TableColumn<Appointment, String> aptContact;
-    @FXML private TableColumn<Appointment, String> aptLocation;
-    @FXML private TableColumn<Appointment, String> aptStart;
-    @FXML private TableColumn<Appointment, String> aptEnd;
-    @FXML private RadioButton weekly;
-    @FXML private RadioButton monthly;
-    @FXML private Label Label;
+    Button newAppointmentButton;
+    @FXML
+    Button editAppointmentButton;
+    @FXML
+    Button deleteButton;
+    @FXML
+    Button customersViewButton;
+    @FXML
+    Button reportsButton;
+    @FXML
+    Button logOutButton;
+    @FXML
+    Button nextTimeButton;
+    @FXML
+    Button previousTimeButton;
+    @FXML
+    RadioButton monthFilterButton;
+    @FXML
+    RadioButton weekFilterButton;
+    @FXML
+    RadioButton noFilterButton;
+    @FXML
+    TableView<Appointment> appointmentTable;
+    @FXML
+    TableColumn<Appointment, Integer> appointmentIdColumn;
+    @FXML
+    TableColumn<Appointment, String> titleColumn;
+    @FXML
+    TableColumn<Appointment, String> descriptionColumn;
+    @FXML
+    TableColumn<Appointment, String> locationColumn;
+    @FXML
+    TableColumn<Appointment, String> contactColumn;
+    @FXML
+    TableColumn<Appointment, String> typeColumn;
+    @FXML
+    TableColumn<Appointment, ZonedDateTime> startDateTimeColumn;
+    @FXML
+    TableColumn<Appointment, ZonedDateTime> endDateTimeColumn;
+    @FXML
+    TableColumn<Appointment, Integer> customerIdColumn;
+    @FXML
+    ToggleGroup filterToggle;
+    @FXML
+    Label selectedTimeLabel;
+
+    // Markers for date filtering.
+    ZonedDateTime startRangeMarker;
+    ZonedDateTime endRangeMarker;
+
+    /**
+     * switchScreen
+     * loads new stage
+     *
+     * @param event button click
+     * @param switchPath path of new stage
+     * @throws IOException
+     */
+    public void switchScreen(ActionEvent event, String switchPath) throws IOException {
+        Parent parent = FXMLLoader.load(getClass().getResource(switchPath));
+        Scene scene = new Scene(parent);
+        Stage window = (Stage) ((Node)event.getSource()).getScene().getWindow();
+        window.setScene(scene);
+        window.show();
+    }
+
+    /**
+     * initToggleGroup
+     * creates new toggle group preventing multiple selections
+     */
+    public void initToggleGroup() {
+
+        filterToggle = new ToggleGroup();
+
+        noFilterButton.setToggleGroup(filterToggle);
+        weekFilterButton.setToggleGroup(filterToggle);
+        monthFilterButton.setToggleGroup(filterToggle);
+
+    }
+
+    /**
+     * pressNoFilterButton
+     * loads all appointments on page
+     *
+     * @param event Button Click
+     */
+    public void pressNoFilterButton(ActionEvent event) {
+        // only one selection at a time!
+        monthFilterButton.setSelected(false);
+        weekFilterButton.setSelected(false);
+
+        ObservableList<Appointment> allAppts;
+        try {
+            allAppts = AppointmentDB.getAllAppointments();
+        }
+        catch (SQLException error){
+            // Sometimes the connection to DB breaks here.(not sure why) If it does, re-connnect and try again.
+            error.printStackTrace();
+            DBConnection.openConnection();
+            try {
+                allAppts = AppointmentDB.getAllAppointments();
+            } catch (SQLException anotherError) {
+                anotherError.printStackTrace();
+                ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+                Alert invalidInput = new Alert(Alert.AlertType.WARNING, "DB connection failed. please restart", clickOkay);
+                invalidInput.showAndWait();
+                return;
+            }
+
+        }
+        populateAppointments(allAppts);
+        selectedTimeLabel.setText("All Appointments");
+        startRangeMarker = null;
 
 
-    private Customer selectedCustomer;
-    private Appointment selectedAppointment;
+    }
 
-    public void handleCustomerSelection() {
-        selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
-        int id = selectedCustomer.getCustomerID();
+    /**
+     * pressWeekFilterButton
+     * filters appts by week
+     *
+     * @param event Button Click
+     * @throws SQLException
+     */
+    public void pressWeekFilterButton(ActionEvent event) throws SQLException {
+        // Only one selection at a time!
+        monthFilterButton.setSelected(false);
+        noFilterButton.setSelected(false);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-        CustomerLabel.setText((selectedCustomer.getCustomerName()));
+        ObservableList<Appointment> filteredAppts = FXCollections.observableArrayList();
+        startRangeMarker = ZonedDateTime.now(LogonSession.getUserTimeZone());
+        endRangeMarker = startRangeMarker.plusWeeks(1);
 
-        aptDescription.setCellValueFactory(new PropertyValueFactory<>("aptDescription"));
-        aptContact.setCellValueFactory(new PropertyValueFactory<>("aptContact"));
-        aptLocation.setCellValueFactory(new PropertyValueFactory<>("aptLocation"));
-        aptStart.setCellValueFactory(cellData -> {
-            return cellData.getValue().getAptStartProperty();
+        // Convert to UTC
+        ZonedDateTime startRange = startRangeMarker.withZoneSameInstant(ZoneOffset.UTC);
+        ZonedDateTime endRange = endRangeMarker.withZoneSameInstant(ZoneOffset.UTC);
+
+        // query DB for time frame
+        filteredAppts = AppointmentDB.getDateFilteredAppointments(startRange, endRange);
+        // populate
+        populateAppointments(filteredAppts);
+        // update label
+        selectedTimeLabel.setText(startRangeMarker.format(formatter) + " - " + endRangeMarker.format(formatter) + " " +
+                LogonSession.getUserTimeZone());
+        // update filterRangeMarker to next week.
+
+
+
+
+    }
+
+    /**
+     * pressMonthFilterButton
+     * filters appts by month
+     *
+     * @param event Button Click
+     * @throws SQLException
+     */
+    public void pressMonthFilterButton(ActionEvent event) throws SQLException {
+        weekFilterButton.setSelected(false);
+        noFilterButton.setSelected(false);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+        ObservableList<Appointment> filteredAppts = FXCollections.observableArrayList();
+        startRangeMarker = ZonedDateTime.now(LogonSession.getUserTimeZone());
+        endRangeMarker = startRangeMarker.plusMonths(1);
+
+        // Convert to UTC
+        ZonedDateTime startRange = startRangeMarker.withZoneSameInstant(ZoneOffset.UTC);
+        ZonedDateTime endRange = endRangeMarker.withZoneSameInstant(ZoneOffset.UTC);
+
+        // query DB for time frame
+        filteredAppts = AppointmentDB.getDateFilteredAppointments(startRange, endRange);
+        // populate
+        populateAppointments(filteredAppts);
+        // update label
+        selectedTimeLabel.setText(startRangeMarker.format(formatter) + " - " + endRangeMarker.format(formatter) + " " +
+                LogonSession.getUserTimeZone());
+
+
+
+    }
+
+    /**
+     * pressNextButton
+     * when filtering appointments moves the time block to next time block
+     *
+     * @param event Button Click
+     * @throws SQLException
+     */
+    public void pressNextButton(ActionEvent event) throws SQLException {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        ObservableList<Appointment> filteredAppts = FXCollections.observableArrayList();
+
+        if (filterToggle.getSelectedToggle() == weekFilterButton) {
+
+            ZonedDateTime startRange = startRangeMarker.plusWeeks(1);
+            ZonedDateTime endRange = endRangeMarker.plusWeeks(1);
+
+            // update markers
+            startRangeMarker = startRange;
+            endRangeMarker = endRange;
+
+            // convert to UTC for the DB
+            startRange = startRange.withZoneSameInstant(ZoneOffset.UTC);
+            endRange = endRange.withZoneSameInstant(ZoneOffset.UTC);
+
+            filteredAppts = AppointmentDB.getDateFilteredAppointments(startRange, endRange);
+
+            populateAppointments(filteredAppts);
+
+            // update label
+            selectedTimeLabel.setText(startRangeMarker.format(formatter) + " - " + endRangeMarker.format(formatter) + " " +
+                    LogonSession.getUserTimeZone());
+
+        }
+        if (filterToggle.getSelectedToggle() == monthFilterButton) {
+
+            ZonedDateTime startRange = startRangeMarker.plusMonths(1);
+            ZonedDateTime endRange = endRangeMarker.plusMonths(1);
+
+            // update markers
+            startRangeMarker = startRange;
+            endRangeMarker = endRange;
+
+            // convert to UTC for the DB
+            startRange = startRange.withZoneSameInstant(ZoneOffset.UTC);
+            endRange = endRange.withZoneSameInstant(ZoneOffset.UTC);
+
+            filteredAppts = AppointmentDB.getDateFilteredAppointments(startRange, endRange);
+
+            populateAppointments(filteredAppts);
+
+            // update label
+            selectedTimeLabel.setText(startRangeMarker.format(formatter) + " - " + endRangeMarker.format(formatter) + " " +
+                    LogonSession.getUserTimeZone());
+
+        }
+
+    }
+
+    /**
+     * pressBackButton
+     * moves filtering time block back one unit
+     *
+     * @param event Button Click
+     * @throws SQLException
+     */
+    public void pressBackButton(ActionEvent event) throws SQLException {
+
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        ObservableList<Appointment> filteredAppts = FXCollections.observableArrayList();
+
+        if (filterToggle.getSelectedToggle() == weekFilterButton) {
+
+            ZonedDateTime startRange = startRangeMarker.minusWeeks(1);
+            ZonedDateTime endRange = endRangeMarker.minusWeeks(1);
+
+            // update markers
+            startRangeMarker = startRange;
+            endRangeMarker = endRange;
+
+            // convert to UTC for the DB
+            startRange = startRange.withZoneSameInstant(ZoneOffset.UTC);
+            endRange = endRange.withZoneSameInstant(ZoneOffset.UTC);
+
+            filteredAppts = AppointmentDB.getDateFilteredAppointments(startRange, endRange);
+
+            populateAppointments(filteredAppts);
+
+            // update label
+            selectedTimeLabel.setText(startRangeMarker.format(formatter) + " - " + endRangeMarker.format(formatter) + " " +
+                    LogonSession.getUserTimeZone());
+
+        }
+        if (filterToggle.getSelectedToggle() == monthFilterButton) {
+
+            ZonedDateTime startRange = startRangeMarker.minusMonths(1);
+            ZonedDateTime endRange = endRangeMarker.minusMonths(1);
+
+            // update markers
+            startRangeMarker = startRange;
+            endRangeMarker = endRange;
+
+            // convert to UTC for the DB
+            startRange = startRange.withZoneSameInstant(ZoneOffset.UTC);
+            endRange = endRange.withZoneSameInstant(ZoneOffset.UTC);
+
+            filteredAppts = AppointmentDB.getDateFilteredAppointments(startRange, endRange);
+
+            populateAppointments(filteredAppts);
+
+            // update label
+            selectedTimeLabel.setText(startRangeMarker.format(formatter) + " - " + endRangeMarker.format(formatter) + " " +
+                    LogonSession.getUserTimeZone());
+        }
+
+    }
+
+    /**
+     * pressDeleteButton
+     * deletes selected appts from DB and reloads appointments table
+     *
+     * @param event Button Click
+     * @throws IOException
+     * @throws SQLException
+     */
+    public void pressDeleteButton(ActionEvent event) throws IOException, SQLException {
+
+        Appointment selectedAppt = appointmentTable.getSelectionModel().getSelectedItem();
+
+        // check that user selected an appointment in the table
+        if (selectedAppt == null) {
+            ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+            Alert invalidInput = new Alert(Alert.AlertType.WARNING, "No selected Appointment", clickOkay);
+            invalidInput.showAndWait();
+            return;
+        }
+        else {
+            // show alert and ensure user wants to delete
+            ButtonType clickYes = ButtonType.YES;
+            ButtonType clickNo = ButtonType.NO;
+            Alert deleteAlert = new Alert(Alert.AlertType.WARNING, "Are you sure you want to delete Appointment: "
+                    + selectedAppt.getAppointmentID() + " ?", clickYes, clickNo);
+            Optional<ButtonType> result = deleteAlert.showAndWait();
+
+            // if user confirms, delete appointment
+            if (result.get() == ButtonType.YES) {
+                Boolean success = AppointmentDB.deleteAppointment(selectedAppt.getAppointmentID());
+
+                // if successful notify, if not show user error.
+                if (success) {
+                    ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+                    Alert deletedAppt = new Alert(Alert.AlertType.CONFIRMATION, "Appointment deleted", clickOkay);
+                    deletedAppt.showAndWait();
+
+                }
+                else {
+                    //TODO - log error if it occurs
+                    ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+                    Alert deleteAppt = new Alert(Alert.AlertType.WARNING, "Failed to delete Appointment", clickOkay);
+                    deleteAppt.showAndWait();
+
+                }
+
+                // Re-load appointments on screen
+                try {
+                    populateAppointments(AppointmentDB.getAllAppointments());
+                }
+                catch (SQLException error){
+                    //TODO - log error
+                    error.printStackTrace();
+                }
+
+            }
+            else {
+                return;
+            }
+        }
+    }
+
+    /**
+     * pressNewButton
+     * loads stage to add appointment
+     *
+     * @param event Button Click
+     * @throws IOException
+     */
+    public void pressNewButton(ActionEvent event) throws IOException {
+        switchScreen(event, "/view_controller/addAppointmentPage.fxml");
+
+    }
+
+    /**
+     * pressLogoutButton
+     * logs user out
+     *
+     * @param event Button Click
+     * @throws IOException
+     */
+    public void pressLogoutButton(ActionEvent event) throws IOException {
+        ButtonType clickYes = ButtonType.YES;
+        ButtonType clickNo = ButtonType.NO;
+        Alert logOff = new Alert(Alert.AlertType.WARNING, "Are you sure you want to Log Off?", clickYes, clickNo);
+        Optional<ButtonType> result = logOff.showAndWait();
+
+        if (result.get() == ButtonType.YES) {
+            LogonSession.logOff();
+            switchScreen(event, "/view_controller/loginPage.fxml");
+        }
+        else {
+            return;
+        }
+
+
+    }
+
+    /**
+     * pressEditButton
+     * passes object to next stage and loads stage
+     *
+     * @param event Button Click
+     * @throws IOException
+     * @throws SQLException
+     */
+    public void pressEditButton(ActionEvent event) throws IOException, SQLException {
+
+        Appointment selectedAppt = appointmentTable.getSelectionModel().getSelectedItem();
+        // throw error if no selection
+        if (selectedAppt == null) {
+            ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+            Alert invalidInput = new Alert(Alert.AlertType.WARNING, "No selected Appointment", clickOkay);
+            invalidInput.showAndWait();
+            return;
+
+        }
+
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/view_controller/editAppointmentPage.fxml"));
+        Parent parent = loader.load();
+        Scene scene = new Scene(parent);
+        // get the controller and load our selected appointment into it
+        editAppointmentController controller = loader.getController();
+        controller.initData(selectedAppt);
+        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+        window.setScene(scene);
+
+    }
+
+    /**
+     * pressCustomerButton
+     * loads customer stage
+     *
+     * @param event Button Click
+     * @throws IOException
+     */
+    public void pressCustomerButton(ActionEvent event) throws IOException {
+
+        switchScreen(event, "/view_controller/customerView.fxml");
+
+    }
+
+    /**
+     * pressReportsPage
+     * loads reports page
+     *
+     * @param event Button Click
+     * @throws IOException
+     */
+    public void pressReportsPage(ActionEvent event) throws IOException {
+        switchScreen(event, "/view_controller/reportsPage.fxml");
+
+    }
+
+    /**
+     * loads appointments on page
+     *
+     * @param inputList list of appointments
+     */
+    public void populateAppointments(ObservableList<Appointment> inputList) {
+        // Takes an observable list of appointments and populates them on screen.
+
+        appointmentIdColumn.setCellValueFactory(new PropertyValueFactory<Appointment, Integer>("appointmentID"));
+        titleColumn.setCellValueFactory(new PropertyValueFactory<Appointment, String>("title"));
+        descriptionColumn.setCellValueFactory(new PropertyValueFactory<Appointment, String>("description"));
+        locationColumn.setCellValueFactory(new PropertyValueFactory<Appointment, String>("location"));
+        typeColumn.setCellValueFactory(new PropertyValueFactory<Appointment, String>("type"));
+        contactColumn.setCellValueFactory(new PropertyValueFactory<Appointment, String>("contactName"));
+        startDateTimeColumn.setCellValueFactory(new PropertyValueFactory<Appointment, ZonedDateTime>("startDateTime"));
+        endDateTimeColumn.setCellValueFactory(new PropertyValueFactory<Appointment, ZonedDateTime>("endDateTime"));
+        customerIdColumn.setCellValueFactory(new PropertyValueFactory<Appointment, Integer>("customerID"));
+        appointmentTable.setItems(inputList);
+
+    }
+
+    /**
+     * checkCanceled
+     * checks to see if any appointments have type cancelled
+     *
+     * @param inputList list of all appointments
+     */
+    public void checkCanceled(ObservableList<Appointment> inputList) {
+
+        inputList.forEach((appt) -> {
+            if (appt.getType().equalsIgnoreCase("canceled")) {
+                ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+                Alert invalidInput = new Alert(Alert.AlertType.WARNING, "Appointment " + appt.getAppointmentID() +
+                        " is canceled.", clickOkay);
+                invalidInput.showAndWait();
+            }
         });
-        aptEnd.setCellValueFactory(cellData -> {
-            return cellData.getValue().getAptEndProperty();
-        });
-        if (weekly.isSelected()){
-            aptTable.setItems(AppointmentDB.getApptsWeekly(id));
-        }
-        if (monthly.isSelected()){
-            aptTable.setItems(AppointmentDB.getApptsMonthly(id));
-        }
+
     }
 
-    public void handleBackButton(ActionEvent event) {
-        ((Node)(event.getSource())).getScene().getWindow().hide();
-    }
 
-    public void handleAddAppointments(ActionEvent event) {
-        try {
-            selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
-            if (selectedCustomer == null) {
-                Alerts.infoDialog("No Selection", "Please select a customer", "You have not chosen a customer to add an appointment. Please make a selection");
-            } else {
-                Alerts.confirmDialog("Add Appointment?", "Would you like to add an appointment for " + selectedCustomer.getCustomerName() + "?");
-                Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("AddAppointment.fxml"));
-                scene = loader.load();
-                addAppointmentController controller = loader.getController();
-                controller.setCustomer(selectedCustomer);
-                stage.setScene(new Scene(scene));
-                stage.show();
-            }
-        }
-        catch (IOException e){
-            Logger logger = Logger.getLogger(getClass().getName());
-            logger.log(Level.SEVERE, "Failed to create new Window.", e);
-        }
-    }
-
-    public void handleEditAppointments(ActionEvent event) {
-        try {
-            selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
-            selectedAppointment = aptTable.getSelectionModel().getSelectedItem();
-            if (selectedCustomer == null || selectedAppointment == null) {
-                Alerts.infoDialog("No Selection", "Please select a customer AND appointment", "You have not chosen a customer or appointment to edit. Please make a selection");
-            } else {
-                Alerts.confirmDialog("Edit Appointment?", "Would you like to edit an appointment for " + selectedCustomer.getCustomerName() + "?");
-                Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("EditAppointment.fxml"));
-                scene = loader.load();
-                editAppointmentController controller = loader.getController();
-                controller.setCustomer(selectedCustomer);
-                controller.setAppointment(selectedAppointment);
-                stage.setScene(new Scene(scene));
-                stage.show();
-            }
-        }
-        catch (IOException e){
-            Logger logger = Logger.getLogger(getClass().getName());
-            logger.log(Level.SEVERE, "Failed to create new Window.", e);
-        }
-    }
-
-    public void handleDeleteAppointment(ActionEvent event) {
-        selectedAppointment = aptTable.getSelectionModel().getSelectedItem();
-        if (selectedAppointment == null) {
-            Alerts.infoDialog("No Selection", "Please select an appointment", "An appointment must be selected for deletion");
-        } else {
-            Alerts.confirmDialog("Would you like to delete this appointment?", "would you like to delete the appointment with " + selectedAppointment.getAptContact() + "?");
-            AppointmentDB.deleteAppointment(selectedAppointment.getAptID());
-            handleCustomerSelection();
-        }
-    }
-
-    public void radioButtonChanges(ActionEvent event) {
-        if(weekly.isSelected()){
-            Label.setText("Weekly Appointments");
-        }
-        if(monthly.isSelected()){
-            Label.setText("Monthly Appointments");
-        }
-        if (selectedCustomer == null) return;
-        else{ handleCustomerSelection();}
-    }
-
-    public void handleAddCustomer(ActionEvent event) throws Exception{
-        Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("AddCustomer.fxml"));
-        scene = loader.load();
-        stage.setScene(new Scene(scene));
-        stage.show();
-    }
-
-    public void handleReports(ActionEvent event) throws IOException, SQLException {
-        Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Reports.fxml"));
-        scene = loader.load();
-        reportsController controller = loader.getController();
-        controller.handleReportsApptTypes();
-        stage.setScene(new Scene(scene));
-        stage.show();
-    }
-
-    public void handleDeleteCustomer(ActionEvent event) {
-        selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
-        if (selectedCustomer == null) {
-            Alerts.infoDialog("No Selection", "Please select a customer", "An customer must be selected for deletion");
-        } else {
-            Alerts.confirmDialog("Would you like to delete this customer?", "would you like to delete " + selectedCustomer.getCustomerName() + "?");
-            CustomerDB.deleteCustomer(selectedCustomer.getCustomerID());
-
-            //Refresh Customer Table
-            customerTable.setItems(CustomerDB.getAllCustomers());
-        }
-    }
-
-    public void handleEditCustomer(ActionEvent event) {
-        try {
-            selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
-            if (selectedCustomer == null) {
-                Alerts.infoDialog("No Selection", "Please select a customer to continue.", "You have not chosen a customer to edit. Please make a selection");
-            } else {
-                Alerts.confirmDialog("Edit Customer?", "Would you like to edit " + selectedCustomer.getCustomerName() + "?");
-                Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("EditCustomers.fxml"));
-                scene = loader.load();
-                editCustomerController controller = loader.getController();
-                controller.setCustomer(selectedCustomer);
-                stage.setScene(new Scene(scene));
-                stage.show();
-            }
-        }
-        catch (IOException e){
-            Logger logger = Logger.getLogger(getClass().getName());
-            logger.log(Level.SEVERE, "Failed to create new Window.", e);
-        }
-    }
-
+    /**
+     * initialize
+     * Initializes stage and loads objects on screen
+     *
+     * @param location location / time zone
+     * @param resources resources
+     */
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        customerId.setCellValueFactory(new PropertyValueFactory<>("customerID"));
-        customerName.setCellValueFactory(new PropertyValueFactory<>("customerName"));
-        customerTable.setItems(CustomerDB.getAllCustomers());
+    public void initialize(URL location, ResourceBundle resources)   {
 
-        //Check for appointments
-        System.out.println(UserDB.getCurrentUser().getUsername());
-        Appointment appointment = AppointmentDB.get15MinuteApt();
-        if (appointment != null) {
-            Customer customer = (CustomerDB.getCustomer(appointment.getAptCustomerID()));
-            String alertMessage = String.format("You have a %s appointment with %s at %s",
-                    appointment.getAptTitle(),
-                    customer.getCustomerName(),
-                    appointment.getAptTime());
-            Alerts.confirmDialog("Appointment Reminder", alertMessage);
+
+        noFilterButton.setSelected(true);
+        initToggleGroup();
+
+        // populate table view, handle DB connection breakage by retry.
+        ObservableList<Appointment> allAppts = null;
+        try {
+            allAppts = AppointmentDB.getAllAppointments();
         }
+        catch (SQLException error){
+            // Sometimes the connection to DB breaks here.(not sure why) If it does, re-connnect and try again.
+            error.printStackTrace();
+            DBConnection.openConnection();
+            try {
+                allAppts = AppointmentDB.getAllAppointments();
+            } catch (SQLException anotherError) {
+                anotherError.printStackTrace();
+                ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+                Alert invalidInput = new Alert(Alert.AlertType.WARNING, "DB connection failed. please restart", clickOkay);
+                invalidInput.showAndWait();
+                return;
+            }
+
+        }
+        populateAppointments(allAppts);
+        checkCanceled(allAppts);
+
 
     }
 }

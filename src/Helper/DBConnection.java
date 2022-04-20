@@ -14,7 +14,7 @@ public abstract class DBConnection {
     private static String password = "Passw0rd!"; // Password
     public static Connection connection;  // Connection Interface
 
-    public static Connection getConnection(){return connection;}
+
     public static void openConnection()
     {
         try {
@@ -38,4 +38,5 @@ public abstract class DBConnection {
             System.out.println("Error:" + e.getMessage());
         }
     }
+    public static Connection getConnection(){return connection;}
 }
