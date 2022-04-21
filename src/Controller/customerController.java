@@ -90,7 +90,7 @@ public class customerController implements Initializable {
      * @throws IOException
      */
     public void pressAddButton(ActionEvent event) throws IOException {
-        switchScreen(event, "/View/addCustomer.fxml");
+        switchScreen(event, "/View/addCustomerView.fxml");
 
     }
 
@@ -115,7 +115,7 @@ public class customerController implements Initializable {
         }
 
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/View/editCustomer.fxml"));
+        loader.setLocation(getClass().getResource("/View/editCustomerView.fxml"));
         Parent parent = loader.load();
         Scene scene = new Scene(parent);
         // get the controller and load our selected appointment into it

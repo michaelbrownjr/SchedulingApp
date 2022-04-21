@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.time.Instant;
 
 public class Logger {
-    private static final String FILENAME = "C195 Logger.txt";
+    private static final String FILENAME = "login_activity.txt";
 
     public Logger() {}
 

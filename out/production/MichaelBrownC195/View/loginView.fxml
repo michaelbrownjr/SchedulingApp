@@ -6,52 +6,45 @@
 
 <GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.loginController">
     <children>
-        <AnchorPane prefHeight="318.0" prefWidth="326.0">
+        <AnchorPane prefHeight="250.0" prefWidth="450.0">
             <children>
-                <Label fx:id="titleLabel" alignment="CENTER" layoutX="80.0" layoutY="22.0" prefHeight="39.0"
-                       prefWidth="167.0" text="Customer Scheduling " textAlignment="JUSTIFY">
+                <Label fx:id="titleTextLabel" alignment="CENTER" layoutX="80.0" layoutY="22.0" prefHeight="39.0" prefWidth="167.0" text="Customer Scheduling " textAlignment="JUSTIFY">
                     <font>
-                        <Font name="Calibri Bold" size="18.0"/>
+                        <Font name="Calibri Bold" size="18.0" />
                     </font>
                 </Label>
                 <VBox layoutX="22.0" layoutY="101.0" prefHeight="98.0" prefWidth="283.0" spacing="10.0">
                     <children>
                         <HBox prefHeight="26.0" prefWidth="265.0">
                             <children>
-                                <Label fx:id="userNameLabel" prefHeight="26.0" prefWidth="98.0" text="Username">
+                                <Label fx:id="usernameTextLabel" prefHeight="26.0" prefWidth="98.0" text="Username">
                                     <font>
-                                        <Font name="Calibri Bold" size="12.0"/>
+                                        <Font name="Calibri Bold" size="12.0" />
                                     </font>
                                 </Label>
-                                <TextField fx:id="userTextBox" alignment="CENTER" prefHeight="26.0" prefWidth="186.0"/>
+                                <TextField fx:id="userTextField" alignment="CENTER" prefHeight="26.0" prefWidth="186.0" />
                             </children>
                         </HBox>
                         <HBox layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0">
                             <children>
-                                <Label fx:id="passwordLabel" prefHeight="26.0" prefWidth="99.0" text="Password">
+                                <Label fx:id="passwordTextLabel" prefHeight="26.0" prefWidth="99.0" text="Password">
                                     <font>
-                                        <Font name="Calibri Bold" size="12.0"/>
+                                        <Font name="Calibri Bold" size="12.0" />
                                     </font>
                                 </Label>
-                                <TextField fx:id="passwordTextBox" alignment="CENTER" prefHeight="26.0"
-                                           prefWidth="186.0"/>
+                                <TextField fx:id="passwordTextField" alignment="CENTER" prefHeight="26.0" prefWidth="186.0" />
                             </children>
                         </HBox>
                     </children>
                 </VBox>
-                <HBox alignment="CENTER" layoutX="5.0" layoutY="188.0" prefHeight="66.0" prefWidth="306.0"
-                      spacing="15.0">
+                <HBox alignment="CENTER" layoutX="120.0" layoutY="170.0" prefHeight="66.0" prefWidth="186.0" spacing="15.0">
                     <children>
-                        <Button fx:id="loginButton" mnemonicParsing="false" onAction="#pressLogonButton"
-                                prefHeight="39.0" prefWidth="78.0" text="Login"/>
-                        <Button fx:id="clearButton" mnemonicParsing="false" onAction="#pressClearButton"
-                                prefHeight="39.0" prefWidth="78.0" text="Clear"/>
-                        <Button fx:id="exitButton" mnemonicParsing="false" onAction="#pressExitButton" prefHeight="39.0"
-                                prefWidth="78.0" text="Exit"/>
+                        <Button fx:id="clearButton" mnemonicParsing="false" onAction="#clearButtonActivity" prefHeight="39.0" prefWidth="78.0" text="Clear" />
+                        <Button fx:id="exitButton" mnemonicParsing="false" onAction="#exitButtonActivity" prefHeight="39.0" prefWidth="78.0" text="Exit" />
                     </children>
                 </HBox>
-                <Label fx:id="zoneLabel" contentDisplay="CENTER" layoutX="86.0" layoutY="61.0" prefHeight="18.0"
-                       prefWidth="156.0" text="Label" textAlignment="CENTER"/>
+                <Label fx:id="zoneLabel" contentDisplay="CENTER" layoutX="86.0" layoutY="61.0" prefHeight="18.0" prefWidth="156.0" text="Label" textAlignment="CENTER" />
+                  <Button fx:id="loginButton" layoutX="328.0" layoutY="107.0" mnemonicParsing="false" onAction="#logonButtonActivity" prefHeight="39.0" prefWidth="78.0" text="Login" />
             </children>
         </AnchorPane>
     </children>

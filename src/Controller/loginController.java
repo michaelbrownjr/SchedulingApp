@@ -31,15 +31,15 @@ import java.util.ResourceBundle;
 public class loginController implements Initializable {
 
     @ FXML
-    private TextField passwordTextBox;
+    private TextField passwordTextField;
     @ FXML
-    private TextField userTextBox;
+    private TextField userTextField;
     @ FXML
-    private Label titleLabel;
+    private Label titleTextLabel;
     @ FXML
-    private Label userNameLabel;
+    private Label usernameTextLabel;
     @ FXML
-    private Label passwordLabel;
+    private Label passwordTextLabel;
     @ FXML
     private Button loginButton;
     @ FXML
@@ -68,16 +68,16 @@ public class loginController implements Initializable {
     }
 
     /**
-     * pressLogonButton
+     * logonButtonActivity
      * attempts logon
      *
      * @param event Button Click
      * @throws IOException
      * @throws SQLException
      */
-    public void pressLogonButton(ActionEvent event) throws IOException, SQLException {
-        String userName = userTextBox.getText();
-        String password = passwordTextBox.getText();
+    public void logonButtonActivity(ActionEvent event) throws IOException, SQLException {
+        String userName = userTextField.getText();
+        String password = passwordTextField.getText();
 
         // Attempt Login
         boolean logon = LogonSession.login(userName, password);
@@ -115,7 +115,7 @@ public class loginController implements Initializable {
         }
         else {
             Locale userLocale = Locale.getDefault();
-            ResourceBundle resources = ResourceBundle.getBundle("language_property/Languages");
+            ResourceBundle resources = ResourceBundle.getBundle("Resources/Languages");
             ButtonType clickOkay = new ButtonType(resources.getString("okayButton"), ButtonBar.ButtonData.OK_DONE);
             Alert failedLogon = new Alert(Alert.AlertType.WARNING, resources.getString("logonFailedButton"),
                     clickOkay);
@@ -125,25 +125,25 @@ public class loginController implements Initializable {
     }
 
     /**
-     * pressClearButton
+     * clearButtonActivity
      * clears fields on page
      *
      * @param event Button Click
      * @throws IOException
      */
-    public void pressClearButton(ActionEvent event) throws IOException {
-        userTextBox.clear();
-        passwordTextBox.clear();
+    public void clearButtonActivity(ActionEvent event) throws IOException {
+        userTextField.clear();
+        passwordTextField.clear();
 
     }
 
     /**
-     * pressExitButton
+     * exitButtonActivity
      * closes Application
      *
      * @param event Button Click
      */
-    public void pressExitButton(ActionEvent event) {
+    public void exitButtonActivity(ActionEvent event) {
         LogonSession.logOff();
         System.exit(0);
 
@@ -162,9 +162,9 @@ public class loginController implements Initializable {
         Locale userLocale = Locale.getDefault();
         zoneLabel.setText(ZoneId.systemDefault().toString());
         resources = ResourceBundle.getBundle("Resources/Languages");
-        titleLabel.setText(resources.getString("titleLabel"));
-        userNameLabel.setText(resources.getString("userNameLabel"));
-        passwordLabel.setText(resources.getString("passwordLabel"));
+        titleTextLabel.setText(resources.getString("titleTextLabel"));
+        usernameTextLabel.setText(resources.getString("usernameTextLabel"));
+        passwordTextLabel.setText(resources.getString("passwordTextLabel"));
         loginButton.setText(resources.getString("loginButton"));
         clearButton.setText(resources.getString("clearButton"));
         exitButton.setText(resources.getString("exitButton"));

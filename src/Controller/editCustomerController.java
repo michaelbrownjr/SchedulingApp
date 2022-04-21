@@ -129,12 +129,12 @@ public class editCustomerController implements Initializable {
     }
 
     /**
-     * pressClearButton
+     * clearButtonActivity
      * clears fields on screen
      *
      * @param event Button Click
      */
-    public void pressClearButton(ActionEvent event) {
+    public void clearButtonActivity(ActionEvent event) {
         countryComboBox.getSelectionModel().clearSelection();
         divisionComboBox.getSelectionModel().clearSelection();
         nameTextBox.clear();

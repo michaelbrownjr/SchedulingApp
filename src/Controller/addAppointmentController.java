@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -21,7 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ResourceBundle;
 
-public class addAppointmentController {
+public class addAppointmentController implements Initializable {
     @FXML
     TextField titleTextBox;
     @FXML
@@ -194,10 +195,10 @@ public class addAppointmentController {
     }
 
     /**
-     * pressClearButton
+     * clearButtonActivity
      * clears values from the page
      */
-    public void pressClearButton() {
+    public void clearButtonActivity() {
         titleTextBox.clear();
         descriptionTextBox.clear();
         locationTextBox.clear();

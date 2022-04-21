@@ -94,7 +94,7 @@ public class addCustomerController implements Initializable {
             ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Customer added successfully!", clickOkay);
             alert.showAndWait();
-            pressClearButton(event);
+            clearButtonActivity(event);
             switchScreen(event, "/View/customerView.fxml");
         }
         else {
@@ -106,12 +106,12 @@ public class addCustomerController implements Initializable {
     }
 
     /**
-     * pressClearButton
+     * clearButtonActivity
      * clears fields on page
      *
      * @param event Button Click
      */
-    public void pressClearButton(ActionEvent event) {
+    public void clearButtonActivity(ActionEvent event) {
         countryComboBox.getItems().clear();
         divisionComboBox.getItems().clear();
         customerNameTextBox.clear();

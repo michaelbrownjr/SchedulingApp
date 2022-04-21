@@ -211,12 +211,12 @@ public class editAppointmentController implements Initializable {
     }
 
     /**
-     * pressClearButton
+     * clearButtonActivity
      * clears fields on screen
      *
      * @param event Button Click
      */
-    public void pressClearButton(ActionEvent event) {
+    public void clearButtonActivity(ActionEvent event) {
         titleTextBox.clear();
         descriptionTextBox.clear();
         locationTextBox.clear();

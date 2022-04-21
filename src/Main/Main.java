@@ -14,7 +14,7 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/View/loginView.fxml")));
         stage.setTitle("Software II - Advance Java Concept - 195");
-        stage.setScene(new Scene(root, 800, 600));
+        stage.setScene(new Scene(root, 450, 250));
         stage.show();
     }
 
