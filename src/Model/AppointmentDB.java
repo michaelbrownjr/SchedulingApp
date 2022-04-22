@@ -1,6 +1,5 @@
 package Model;
 
-import Helper.Alerts;
 import Helper.DBConnection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -59,8 +58,8 @@ public class AppointmentDB {
 
             // populate into an appt object
             Appointment newAppt = new Appointment(
-                    appointmentID, title, description, location, type, startDateTime, endDateTime, createdDate,
-                    createdBy, lastUpdateDateTime, lastUpdatedBy, customerID, userID, contactID, contactName
+                    appointmentID, title, description, location, type, startDateTime, endDateTime,
+                    customerID, userID, contactName
             );
             filteredAppts.add(newAppt);
         }
@@ -157,8 +156,8 @@ public class AppointmentDB {
 
             // populate into an appt object
             Appointment newAppt = new Appointment(
-                    appointmentID, title, description, location, type, startDateTime, endDateTime, createdDate,
-                    createdBy, lastUpdateDateTime, lastUpdatedBy, customerID, userID, contactID, contactName
+                    appointmentID, title, description, location, type, startDateTime, endDateTime,
+                    customerID, userID, contactName
             );
             filteredAppts.add(newAppt);
         }
@@ -197,8 +196,8 @@ public class AppointmentDB {
 
         // Format inputStart and inputEnd
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String inputStartString = inputStart.format(formatter).toString();
-        String inputEndString = inputEnd.format(formatter).toString();
+        String inputStartString = inputStart.format(formatter);
+        String inputEndString = inputEnd.format(formatter);
 
         sqlCommand.setString(1,inputTitle);
         sqlCommand.setString(2, inputDescription);
@@ -206,7 +205,7 @@ public class AppointmentDB {
         sqlCommand.setString(4, inputType);
         sqlCommand.setString(5, inputStartString);
         sqlCommand.setString(6, inputEndString);
-        sqlCommand.setString(7, ZonedDateTime.now(ZoneOffset.UTC).format(formatter).toString());
+        sqlCommand.setString(7, ZonedDateTime.now(ZoneOffset.UTC).format(formatter));
         sqlCommand.setString(8, inputLastUpdateBy);
         sqlCommand.setInt(9, inputCustomerID);
         sqlCommand.setInt(10, inputUserID);
@@ -258,8 +257,8 @@ public class AppointmentDB {
 
         // Format inputStart and inputEnd
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String inputStartString = inputStart.format(formatter).toString();
-        String inputEndString = inputEnd.format(formatter).toString();
+        String inputStartString = inputStart.format(formatter);
+        String inputEndString = inputEnd.format(formatter);
 
         // Set Params
         sqlCommand.setString(1, inputTitle);
@@ -268,9 +267,9 @@ public class AppointmentDB {
         sqlCommand.setString(4, inputType);
         sqlCommand.setString(5, inputStartString);
         sqlCommand.setString(6, inputEndString);
-        sqlCommand.setString(7, ZonedDateTime.now(ZoneOffset.UTC).format(formatter).toString());
+        sqlCommand.setString(7, ZonedDateTime.now(ZoneOffset.UTC).format(formatter));
         sqlCommand.setString(8, inputCreatedBy);
-        sqlCommand.setString(9, ZonedDateTime.now(ZoneOffset.UTC).format(formatter).toString());
+        sqlCommand.setString(9, ZonedDateTime.now(ZoneOffset.UTC).format(formatter));
         sqlCommand.setString(10, inputLastUpdateBy);
         sqlCommand.setInt(11, inputCustomerID);
         sqlCommand.setInt(12, inputUserID);
@@ -381,8 +380,8 @@ public class AppointmentDB {
 
             // populate into an appt object
             Appointment newAppt = new Appointment(
-                    appointmentID, title, description, location, type, startDateTime, endDateTime, createdDate,
-                    createdBy, lastUpdateDateTime, lastUpdatedBy, customerID, userID, contactID, contactName
+                    appointmentID, title, description, location, type, startDateTime, endDateTime,
+                    customerID, userID, contactName
             );
 
             // Add to the observablelist
@@ -414,8 +413,8 @@ public class AppointmentDB {
         ZonedDateTime utcPlus15 = nowUTC.plusMinutes(15);
 
         // create input strings
-        String rangeStart = nowUTC.format(formatter).toString();
-        String rangeEnd = utcPlus15.format(formatter).toString();
+        String rangeStart = nowUTC.format(formatter);
+        String rangeEnd = utcPlus15.format(formatter);
         Integer logonUserID = LogonSession.getCurrentUser().getUserID();
 
 
@@ -448,8 +447,8 @@ public class AppointmentDB {
             String contactName = results.getString("Contact_Name");
 
             Appointment newAppt = new Appointment(
-                    appointmentID, title, description, location, type, startDateTime, endDateTime, createdDate,
-                    createdBy, lastUpdateDateTime, lastUpdatedBy, customerID, userID, contactID, contactName
+                    appointmentID, title, description, location, type, startDateTime, endDateTime,
+                    customerID, userID, contactName
             );
 
             // Add to the observablelist

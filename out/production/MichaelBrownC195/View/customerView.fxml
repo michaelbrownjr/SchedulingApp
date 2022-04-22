@@ -29,11 +29,11 @@
                     <Insets right="10.0"/>
                 </padding>
             </Button>
-            <Button fx:id="editButton" mnemonicParsing="false" onAction="#pressEditButton" prefHeight="25.0"
+            <Button fx:id="editButton" mnemonicParsing="false" onAction="#editButtonActivity" prefHeight="25.0"
                     prefWidth="81.0" text="Edit"/>
-            <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#pressDeleteButton" prefHeight="25.0"
+            <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#deleteButtonActivity" prefHeight="25.0"
                     prefWidth="81.0" text="Delete"/>
-            <Button fx:id="backButton" mnemonicParsing="false" onAction="#pressBackButton" prefHeight="25.0"
+            <Button fx:id="backButton" mnemonicParsing="false" onAction="#backButtonActivity" prefHeight="25.0"
                     prefWidth="81.0" text="Back"/>
         </children>
         <padding>

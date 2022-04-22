@@ -76,15 +76,15 @@ public class editAppointmentController implements Initializable {
      * initData
      * takes passed object from previous stage and populates it in this stage
      *
-     * @param selectedAppt appt from previous stage
+     * @param selectedAppointment appt from previous stage
      * @throws SQLException
      */
-    public void initData(Appointment selectedAppt) throws SQLException {
+    public void initData(Appointment selectedAppointment) throws SQLException {
 
 
         // get the values to populate into the Date picker
         try {
-            LocalDate apptDate = selectedAppt.getStartDateTime().toLocalDateTime().toLocalDate();
+            LocalDate apptDate = selectedAppointment.getStartDateTime().toLocalDateTime().toLocalDate();
         }
         catch (NullPointerException error) {
             ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
@@ -92,8 +92,8 @@ public class editAppointmentController implements Initializable {
             invalidInput.showAndWait();
             return;
         }
-        ZonedDateTime startDateTimeUTC = selectedAppt.getStartDateTime().toInstant().atZone(ZoneOffset.UTC);
-        ZonedDateTime endDateTimeUTC = selectedAppt.getEndDateTime().toInstant().atZone(ZoneOffset.UTC);
+        ZonedDateTime startDateTimeUTC = selectedAppointment.getStartDateTime().toInstant().atZone(ZoneOffset.UTC);
+        ZonedDateTime endDateTimeUTC = selectedAppointment.getEndDateTime().toInstant().atZone(ZoneOffset.UTC);
 
         ZonedDateTime localStartDateTime = startDateTimeUTC.withZoneSameInstant(LogonSession.getUserTimeZone());
         ZonedDateTime localEndDateTime = endDateTimeUTC.withZoneSameInstant(LogonSession.getUserTimeZone());
@@ -103,18 +103,18 @@ public class editAppointmentController implements Initializable {
         String localEndString = localEndDateTime.format(formatter);
 
         // populate values
-        appointmentIDTextBox.setText(selectedAppt.getAppointmentID().toString());
-        titleTextBox.setText(selectedAppt.getTitle());
-        descriptionTextBox.setText(selectedAppt.getDescription());
-        locationTextBox.setText(selectedAppt.getLocation());
+        appointmentIDTextBox.setText(selectedAppointment.getAppointmentID().toString());
+        titleTextBox.setText(selectedAppointment.getTitle());
+        descriptionTextBox.setText(selectedAppointment.getDescription());
+        locationTextBox.setText(selectedAppointment.getLocation());
         contactComboBox.setItems(ContactDB.getAllContactName());
-        contactComboBox.getSelectionModel().select(selectedAppt.getContactName());
-        typeTextBox.setText(selectedAppt.getType());
+        contactComboBox.getSelectionModel().select(selectedAppointment.getContactName());
+        typeTextBox.setText(selectedAppointment.getType());
         customerComboBox.setItems(CustomerDB.getAllCustomerID());
-        customerComboBox.getSelectionModel().select(selectedAppt.getCustomerID());
+        customerComboBox.getSelectionModel().select(selectedAppointment.getCustomerID());
         userComboBox.setItems(UserDB.getAllUserID());
-        userComboBox.getSelectionModel().select(selectedAppt.getUserID());
-        apptDatePicker.setValue(selectedAppt.getStartDateTime().toLocalDateTime().toLocalDate());
+        userComboBox.getSelectionModel().select(selectedAppointment.getUserID());
+        apptDatePicker.setValue(selectedAppointment.getStartDateTime().toLocalDateTime().toLocalDate());
         startTimeTextBox.setText(localStartString);
         endTimeTextBox.setText(localEndString);
 
@@ -146,15 +146,9 @@ public class editAppointmentController implements Initializable {
         // If startTime is before or after business hours
         // If end time is before or after business hours
         // if startTime is after endTime - these should cover all possible times entered and validate input.
-        if (startZonedDateTime.isBefore(startBusinessHours) | startZonedDateTime.isAfter(endBusinessHours) |
+        return !(startZonedDateTime.isBefore(startBusinessHours) | startZonedDateTime.isAfter(endBusinessHours) |
                 endZonedDateTime.isBefore(startBusinessHours) | endZonedDateTime.isAfter(endBusinessHours) |
-                startZonedDateTime.isAfter(endZonedDateTime)) {
-            return false;
-
-        }
-        else {
-            return true;
-        }
+                startZonedDateTime.isAfter(endZonedDateTime));
 
     }
 
@@ -197,12 +191,7 @@ public class editAppointmentController implements Initializable {
                     return false;
                 }
                 // ConflictAppt end time falls anywhere in the new appt
-                if (conflictEnd.isBefore(endDateTime) & conflictEnd.isAfter(startDateTime)) {
-                    return false;
-                }
-                else {
-                    return true;
-                }
+                return !(conflictEnd.isBefore(endDateTime) & conflictEnd.isAfter(startDateTime));
 
             }
         }
@@ -231,29 +220,29 @@ public class editAppointmentController implements Initializable {
     }
 
     /**
-     * pressBackButton
+     * backButtonActivity
      * loads previous stage
      *
      * @param event Button Click
      * @throws IOException
      */
-    public void pressBackButton(ActionEvent event) throws IOException {
+    public void backButtonActivity(ActionEvent event) throws IOException {
         switchScreen(event, "/View/appointmentView.fxml");
 
     }
 
     /**
-     * pressSaveButton
+     * saveButtonActivity
      * saves appointment
      *
      * @param event Button Click
      * @throws SQLException
      * @throws IOException
      */
-    public void pressSaveButton(ActionEvent event) throws SQLException, IOException {
+    public void saveButtonActivity(ActionEvent event) throws SQLException, IOException {
 
-        Boolean validStartDateTime = true;
-        Boolean validEndDateTime = true;
+        boolean validStartDateTime = true;
+        boolean validEndDateTime = true;
         Boolean validOverlap = true;
         Boolean validBusinessHours = true;
         String errorMessage = "";
@@ -269,8 +258,8 @@ public class editAppointmentController implements Initializable {
         LocalDate apptDate = apptDatePicker.getValue();
         LocalDateTime endDateTime = null;
         LocalDateTime startDateTime = null;
-        ZonedDateTime zonedEndDateTime = null;
-        ZonedDateTime zonedStartDateTime = null;
+        ZonedDateTime zonedEndDateTime;
+        ZonedDateTime zonedStartDateTime;
 
         // take user selected Contact_Name and find the contact_ID FK so we can add to appointments table.
         Integer contactID = ContactDB.findContactID(contactName);
@@ -332,7 +321,6 @@ public class editAppointmentController implements Initializable {
             ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
             Alert invalidInput = new Alert(Alert.AlertType.WARNING, errorMessage, clickOkay);
             invalidInput.showAndWait();
-            return;
 
         }
         else {

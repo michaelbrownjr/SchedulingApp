@@ -1,8 +1,6 @@
 package Controller;
 
-import Helper.Alerts;
 import Model.*;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,6 +18,7 @@ import java.sql.SQLException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class addAppointmentController implements Initializable {
@@ -61,7 +60,7 @@ public class addAppointmentController implements Initializable {
      * @throws IOException
      */
     public void switchScreen(ActionEvent event, String switchPath) throws IOException {
-        Parent parent = FXMLLoader.load(getClass().getResource(switchPath));
+        Parent parent = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(switchPath)));
         Scene scene = new Scene(parent);
         Stage window = (Stage) ((Node)event.getSource()).getScene().getWindow();
         window.setScene(scene);
@@ -69,20 +68,20 @@ public class addAppointmentController implements Initializable {
     }
 
     /**
-     * pressSaveButton
+     * saveButtonActivity
      * handle pressing save button, validate input and add to DB
      *
      * @param event Button Click
      * @throws SQLException
      * @throws IOException
      */
-    public void pressSaveButton(ActionEvent event) throws SQLException, IOException {
+    public void saveButtonActivity(ActionEvent event) throws SQLException, IOException {
 
 
-        boolean validStartDateTime = true;
-        boolean validEndDateTime = true;
-        boolean validOverlap = true;
-        boolean validBusinessHours = true;
+        boolean validStartDateTime;
+        boolean validEndDateTime;
+        boolean validOverlap;
+        boolean validBusinessHours;
         String errorMessage = "";
 
 
@@ -96,8 +95,8 @@ public class addAppointmentController implements Initializable {
         LocalDate apptDate = apptDatePicker.getValue();
         LocalDateTime endDateTime = null;
         LocalDateTime startDateTime = null;
-        ZonedDateTime zonedEndDateTime = null;
-        ZonedDateTime zonedStartDateTime = null;
+        ZonedDateTime zonedEndDateTime;
+        ZonedDateTime zonedStartDateTime;
 
         // take user selected Contact_Name and find the contact_ID FK so we can add to appointments table.
         Integer contactID = ContactDB.findContactID(contactName);
@@ -214,13 +213,13 @@ public class addAppointmentController implements Initializable {
     }
 
     /**
-     * pressBackButton
+     * backButtonActivity
      * Loads previous stage
      *
      * @param event button click
      * @throws IOException
      */
-    public void pressBackButton(ActionEvent event) throws IOException {
+    public void backButtonActivity(ActionEvent event) throws IOException {
         switchScreen(event, "/View/appointmentView.fxml");
 
     }
@@ -282,9 +281,7 @@ public class addAppointmentController implements Initializable {
             return true;
         }
         else {
-            for (int i = 0, possibleConflictsSize = possibleConflicts.size(); i < possibleConflictsSize; i++) {
-                Appointment conflictAppt = possibleConflicts.get(i);
-
+            for (Appointment conflictAppt : possibleConflicts) {
                 LocalDateTime conflictStart = conflictAppt.getStartDateTime().toLocalDateTime();
                 LocalDateTime conflictEnd = conflictAppt.getEndDateTime().toLocalDateTime();
 

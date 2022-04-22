@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<?import javafx.scene.text.Font?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="Controller.addCustomerController"
@@ -60,9 +55,9 @@
         </VBox>
         <HBox alignment="CENTER" layoutX="14.0" layoutY="288.0" prefHeight="46.0" prefWidth="318.0" spacing="20.0">
             <children>
-                <Button fx:id="saveButton" mnemonicParsing="false" onAction="#pressSaveButton" prefHeight="25.0" prefWidth="70.0" text="Save " />
+                <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveButtonActivity" prefHeight="25.0" prefWidth="70.0" text="Save " />
                 <Button fx:id="clearButton" mnemonicParsing="false" onAction="#clearButtonActivity" prefHeight="25.0" prefWidth="70.0" text="Clear" />
-                <Button fx:id="backButton" mnemonicParsing="false" onAction="#pressBackButton" prefHeight="25.0" prefWidth="70.0" text="Back" />
+                <Button fx:id="backButton" mnemonicParsing="false" onAction="#backButtonActivity" prefHeight="25.0" prefWidth="70.0" text="Back" />
             </children>
         </HBox>
     </children>

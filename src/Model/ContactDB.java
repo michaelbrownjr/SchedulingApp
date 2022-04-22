@@ -13,16 +13,16 @@ import java.time.LocalDateTime;
 public class ContactDB {
 
     /**
-     * getMinutesScheduled
-     * Calculates sum of minutes for all appointments for a specific contact
+     * getHoursScheduled
+     * Calculates sum of hours for all appointments for a specific contact
      *
      * @param contactID ID of contact to find sum for
-     * @return Total number of minutes scheduled
+     * @return Total number of hours scheduled
      * @throws SQLException
      */
-    public static Integer getMinutesScheduled(String contactID) throws SQLException {
+    public static Integer getHoursScheduled(String contactID) throws SQLException {
 
-        Integer totalMins = 0;
+        int totalHours = 0;
         PreparedStatement sqlCommand = DBConnection.getConnection().prepareStatement(
                 "SELECT * FROM appointments WHERE Contact_ID = ?");
 
@@ -33,12 +33,13 @@ public class ContactDB {
         while ( results.next() ) {
             LocalDateTime startDateTime = results.getTimestamp("Start").toLocalDateTime();
             LocalDateTime endDateTime = results.getTimestamp("End").toLocalDateTime();
-            totalMins += (int) Duration.between(startDateTime, endDateTime).toMinutes();
+            totalHours += (int) Duration.between(startDateTime, endDateTime).toHours();
         }
 
         sqlCommand.close();
-        return totalMins;
+        return totalHours;
     }
+
 
     /**
      * getContactAppts
@@ -111,7 +112,7 @@ public class ContactDB {
      */
     public static Integer findContactID(String contactName) throws SQLException {
         // take user selected name and find the FK so we can add to appointments table.
-        Integer contactID = -1;
+        int contactID = -1;
         PreparedStatement sqlCommand = DBConnection.getConnection().prepareStatement("SELECT Contact_ID, Contact_Name " +
                 "FROM contacts WHERE Contact_Name = ?");
         sqlCommand.setString(1, contactName);

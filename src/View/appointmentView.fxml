@@ -4,29 +4,14 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="515.0" prefWidth="928.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.appointmentController">
+<AnchorPane prefHeight="515.0" prefWidth="1034.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.appointmentController">
     <children>
-        <RadioButton fx:id="monthFilterButton" layoutX="14.0" layoutY="420.0" mnemonicParsing="false" onAction="#pressMonthFilterButton" text="Filter by month " />
-        <RadioButton fx:id="weekFilterButton" layoutX="14.0" layoutY="446.0" mnemonicParsing="false" onAction="#pressWeekFilterButton" text="Filter by Week " />
-        <RadioButton fx:id="noFilterButton" layoutX="14.0" layoutY="472.0" mnemonicParsing="false" onAction="#pressNoFilterButton" text="All / No Filter ">
-            <font>
-                <Font name="Calibri" size="12.0" />
-            </font>
+        <RadioButton fx:id="monthFilterRadio" layoutX="14.0" layoutY="420.0" mnemonicParsing="false" onAction="#monthFilterRadioActivity" text="Filter by month " />
+        <RadioButton fx:id="weekFilterRadio" layoutX="14.0" layoutY="446.0" mnemonicParsing="false" onAction="#weekFilterRadioActivity" text="Filter by Week " />
+        <RadioButton fx:id="emptyFilterRadio" layoutX="14.0" layoutY="472.0" mnemonicParsing="false" onAction="#emptyFilterRadioActivity" text="Show All">
+
         </RadioButton>
-        <TableView fx:id="appointmentTable" layoutX="14.0" layoutY="14.0" prefHeight="388.0" prefWidth="899.0">
-            <columns>
-                <TableColumn fx:id="appointmentIdColumn" prefWidth="109.28573703765869" text="Appointment ID" />
-                <TableColumn fx:id="titleColumn" prefWidth="67.28569793701172" text="Title" />
-                <TableColumn fx:id="descriptionColumn" prefWidth="95.57148742675781" text="Description" />
-                <TableColumn fx:id="locationColumn" prefWidth="94.7142333984375" text="Location" />
-                <TableColumn fx:id="contactColumn" prefWidth="101.4285888671875" text="Contact" />
-                <TableColumn fx:id="typeColumn" prefWidth="69.99990844726562" text="Type" />
-                <TableColumn fx:id="startDateTimeColumn" prefWidth="122.5714111328125" text="Start Date/Time" />
-                <TableColumn fx:id="endDateTimeColumn" prefWidth="138.71435546875" text="End Date/Time" />
-                <TableColumn fx:id="customerIdColumn" prefWidth="99.5714111328125" text="Customer ID" />
-            </columns>
-        </TableView>
-        <Label fx:id="SelectedWeekMonth" layoutX="129.0" layoutY="416.0" prefHeight="18.0" prefWidth="141.0" text="Selected Week/Month: ">
+        <Label fx:id="selectedWeekMonth" layoutX="129.0" layoutY="416.0" prefHeight="18.0" prefWidth="141.0" text="Selected Week/Month: ">
             <font>
                 <Font name="System Bold" size="12.0" />
             </font>
@@ -35,14 +20,38 @@
             <font>
                 <Font size="10.0" />
             </font></Label>
-        <Button fx:id="previousTimeButton" layoutX="129.0" layoutY="466.0" mnemonicParsing="false" onAction="#pressBackButton" prefHeight="26.0" prefWidth="101.0" text="Previous" />
-        <Button fx:id="nextTimeButton" layoutX="254.0" layoutY="466.0" mnemonicParsing="false" onAction="#pressNextButton" prefHeight="26.0" prefWidth="101.0" text="Next" />
-        <Button fx:id="newAppointmentButton" layoutX="533.0" layoutY="409.0" mnemonicParsing="false" onAction="#pressNewButton" prefHeight="39.0" prefWidth="89.0" text="New" />
-        <Button fx:id="editAppointmentButton" layoutX="653.0" layoutY="409.0" mnemonicParsing="false" onAction="#pressEditButton" prefHeight="39.0" prefWidth="89.0" text="Edit" />
-        <Button fx:id="customersViewButton" layoutX="540.0" layoutY="462.0" mnemonicParsing="false" onAction="#pressCustomerButton" prefHeight="26.0" prefWidth="74.0" text="Customers" />
-        <Button fx:id="logOutButton" layoutX="779.0" layoutY="462.0" mnemonicParsing="false" onAction="#pressLogoutButton" prefHeight="26.0" prefWidth="74.0" text="Log out" />
-        <Button fx:id="deleteButton" layoutX="772.0" layoutY="409.0" mnemonicParsing="false" onAction="#pressDeleteButton" prefHeight="39.0" prefWidth="89.0" text="Delete" />
-        <Button fx:id="reportsButton" layoutX="660.0" layoutY="462.0" mnemonicParsing="false" onAction="#pressReportsPage" prefHeight="26.0" prefWidth="74.0" text="Reports" />
+        <Button fx:id="previousItemButton" layoutX="129.0" layoutY="466.0" mnemonicParsing="false" onAction="#backButtonActivity" prefHeight="26.0" prefWidth="101.0" text="Previous" />
+        <Button fx:id="nextItemButton" layoutX="254.0" layoutY="466.0" mnemonicParsing="false" onAction="#nextButtonActivity" prefHeight="26.0" prefWidth="101.0" text="Next" />
+
+        <Button fx:id="newAppointmentButton" layoutX="533.0" layoutY="409.0" mnemonicParsing="false" onAction="#newButtonActivity" prefHeight="39.0" prefWidth="89.0" text="New">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font></Button>
+        <Button fx:id="editAppointmentButton" layoutX="653.0" layoutY="409.0" mnemonicParsing="false" onAction="#editButtonActivity" prefHeight="39.0" prefWidth="89.0" text="Edit"> <font>
+            <Font name="System Bold" size="12.0" />
+        </font> </Button>
+        <Button fx:id="deleteButton" layoutX="772.0" layoutY="409.0" mnemonicParsing="false" onAction="#deleteButtonActivity" prefHeight="39.0" prefWidth="89.0" text="Delete"> <font>
+            <Font name="System Bold" size="12.0" />
+        </font> </Button>
+
+        <Button fx:id="customersViewButton" layoutX="540.0" layoutY="462.0" mnemonicParsing="false" onAction="#customerButtonActivity" prefHeight="26.0" prefWidth="74.0" text="Customers" />
+        <Button fx:id="logOutButton" layoutX="779.0" layoutY="462.0" mnemonicParsing="false" onAction="#logoutButtonActivity" prefHeight="26.0" prefWidth="74.0" text="Log out" />
+
+        <Button fx:id="reportsButton" layoutX="660.0" layoutY="462.0" mnemonicParsing="false" onAction="#reportsButtonActivity" prefHeight="26.0" prefWidth="74.0" text="Reports" />
+        <TableView fx:id="appointmentTable" layoutX="14.0" layoutY="14.0" prefHeight="388.0" prefWidth="1001.0">
+            <columns>
+                <TableColumn fx:id="appointmentIDColumn" prefWidth="109.28573703765869" text="Appointment ID" />
+                <TableColumn fx:id="appointmentTitleColumn" prefWidth="67.28569793701172" text="Title" />
+                <TableColumn fx:id="appointmentDescriptionColumn" prefWidth="95.57148742675781" text="Description" />
+                <TableColumn fx:id="appointmentLocationColumn" prefWidth="94.7142333984375" text="Location" />
+                <TableColumn fx:id="appointmentContactColumn" prefWidth="101.4285888671875" text="Contact" />
+                <TableColumn fx:id="appointmentTypeColumn" prefWidth="69.99990844726562" text="Type" />
+                <TableColumn fx:id="startDateTimeColumn" prefWidth="122.5714111328125" text="Start Date/Time" />
+                <TableColumn fx:id="endDateTimeColumn" prefWidth="138.71435546875" text="End Date/Time" />
+                <TableColumn fx:id="customerIdColumn" prefWidth="115.0" text="Customer ID" />
+                <TableColumn fx:id="userIdColumn" prefWidth="85.0" text="User ID" />
+            </columns>
+        </TableView>
     </children>
 
 </AnchorPane>

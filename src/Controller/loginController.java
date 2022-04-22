@@ -144,7 +144,7 @@ public class loginController implements Initializable {
      * @param event Button Click
      */
     public void exitButtonActivity(ActionEvent event) {
-        LogonSession.logOff();
+        LogonSession.exit();
         System.exit(0);
 
     }

@@ -84,14 +84,14 @@ public class editCustomerController implements Initializable {
     }
 
     /**
-     * pressSaveButton
+     * saveButtonActivity
      * validates input and inputs new object to DB
      *
      * @param event Button Click
      * @throws IOException
      * @throws SQLException
      */
-    public void pressSaveButton(ActionEvent event) throws IOException, SQLException {
+    public void saveButtonActivity(ActionEvent event) throws IOException, SQLException {
         // INPUT VALIDATION - check for nulls
         String country = countryComboBox.getValue();
         String division = divisionComboBox.getValue();
@@ -144,13 +144,13 @@ public class editCustomerController implements Initializable {
     }
 
     /**
-     * pressBackButton
+     * backButtonActivity
      * navigates to previous stage
      *
      * @param event Button Click
      * @throws IOException
      */
-    public void pressBackButton(ActionEvent event) throws IOException {
+    public void backButtonActivity(ActionEvent event) throws IOException {
         switchScreen(event, "/View/customerView.fxml");
     }
 

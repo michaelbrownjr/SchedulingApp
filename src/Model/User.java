@@ -2,7 +2,7 @@ package Model;
 
 public class User {
     private String userName;
-    private Integer userID;
+    private final Integer userID;
 
     public User(String inputUsername, Integer inputUserID) {
        userName = inputUsername;
@@ -13,7 +13,7 @@ public class User {
         return userName;
     }
 
-    public void setUsername(String username) {
+    public void setUserName(String username) {
         this.userName = username;
     }
     public Integer getUserID() {

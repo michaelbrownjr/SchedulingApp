@@ -1,6 +1,7 @@
 package Controller;
 
 import Helper.DBConnection;
+import Model.Appointment;
 import Model.AppointmentDB;
 import Model.ContactDB;
 import javafx.collections.ObservableList;
@@ -29,7 +30,7 @@ public class reportsController implements Initializable {
     @FXML
     Button contactScheduleReportButton;
     @FXML
-    Button minsPerContactButton;
+    Button hoursPerContactButton;
     @FXML
     TextArea reportTextField;
     @FXML
@@ -52,13 +53,13 @@ public class reportsController implements Initializable {
     }
 
     /**
-     * pressBackButton
+     * backButtonActivity
      * navigates to previous stage
      *
      * @param event Button Click
      * @throws IOException
      */
-    public void pressBackButton(ActionEvent event) throws IOException {
+    public void backButtonActivity(ActionEvent event) throws IOException {
         switchScreen(event, "/View/appointmentView.fxml");
 
     }
@@ -74,28 +75,28 @@ public class reportsController implements Initializable {
 
         ObservableList<String> reportStrings = AppointmentDB.reportTotalsByTypeAndMonth();
 
-        for (String str : reportStrings) {
-            reportTextField.appendText(str);
-        }
+        for (String str : reportStrings) reportTextField.appendText(str);
 
     }
 
     /**
-     * pressMinsPerContact
+     * pressHoursPerContact
      * populates second report
      *
      * @param event Button Click
      * @throws SQLException
      */
-    public void pressMinsPerContact(ActionEvent event ) throws SQLException {
+    public void pressHoursPerContact(ActionEvent event ) throws SQLException {
         ObservableList<String> contacts = ContactDB.getAllContactName();
 
         for (String contact: contacts) {
             String contactID = ContactDB.findContactID(contact).toString();
             reportTextField.appendText("Contact Name: " + contact + " ID: " + contactID + "\n");
-            reportTextField.appendText("    Total Mins scheduled: " + ContactDB.getMinutesScheduled(contactID) + "\n");
+            reportTextField.appendText("    Total Hours scheduled: " + ContactDB.getHoursScheduled(contactID) + "\n");
         }
     }
+
+
 
     /**
      * pressContactSchedule

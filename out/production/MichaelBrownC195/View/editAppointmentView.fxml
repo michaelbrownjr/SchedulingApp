@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<?import javafx.scene.text.Font?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="Controller.editAppointmentController"
@@ -86,9 +81,9 @@
                 </HBox>
             </children>
         </VBox>
-        <Button fx:id="saveButton" layoutX="300.0" layoutY="224.0" mnemonicParsing="false" onAction="#pressSaveButton" prefHeight="25.0" prefWidth="80.0" text="Save" />
+        <Button fx:id="saveButton" layoutX="300.0" layoutY="224.0" mnemonicParsing="false" onAction="#saveButtonActivity" prefHeight="25.0" prefWidth="80.0" text="Save" />
         <Button fx:id="clearButton" layoutX="402.0" layoutY="224.0" mnemonicParsing="false" onAction="#clearButtonActivity" prefHeight="25.0" prefWidth="80.0" text="Clear" />
-        <Button fx:id="backButton" layoutX="506.0" layoutY="224.0" mnemonicParsing="false" onAction="#pressBackButton" prefHeight="25.0" prefWidth="80.0" text="Back" />
+        <Button fx:id="backButton" layoutX="506.0" layoutY="224.0" mnemonicParsing="false" onAction="#backButtonActivity" prefHeight="25.0" prefWidth="80.0" text="Back" />
         <Label fx:id="timeZoneLabel" layoutX="300.0" layoutY="302.0" prefHeight="18.0" prefWidth="197.0" text="Time Zone" />
         <Label layoutX="300.0" layoutY="279.0" prefHeight="18.0" prefWidth="67.0" text="Time Zone" />
     </children>

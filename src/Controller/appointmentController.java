@@ -1,9 +1,9 @@
 package Controller;
 
-import Helper.Alerts;
 import Helper.DBConnection;
-import Model.*;
-import javafx.collections.FXCollections;
+import Model.Appointment;
+import Model.AppointmentDB;
+import Model.LogonSession;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,7 +14,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -23,10 +22,10 @@ import java.sql.SQLException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class appointmentController implements Initializable {
 
@@ -43,35 +42,38 @@ public class appointmentController implements Initializable {
     @FXML
     Button logOutButton;
     @FXML
-    Button nextTimeButton;
+    Button nextItemButton;
     @FXML
-    Button previousTimeButton;
+    Button previousItemButton;
     @FXML
-    RadioButton monthFilterButton;
+    RadioButton monthFilterRadio;
     @FXML
-    RadioButton weekFilterButton;
+    RadioButton weekFilterRadio;
     @FXML
-    RadioButton noFilterButton;
+    RadioButton emptyFilterRadio;
     @FXML
     TableView<Appointment> appointmentTable;
     @FXML
-    TableColumn<Appointment, Integer> appointmentIdColumn;
+    TableColumn<Appointment, Integer> appointmentIDColumn;
     @FXML
-    TableColumn<Appointment, String> titleColumn;
+    TableColumn<Appointment, String> appointmentTitleColumn;
     @FXML
-    TableColumn<Appointment, String> descriptionColumn;
+    TableColumn<Appointment, String> appointmentDescriptionColumn;
     @FXML
-    TableColumn<Appointment, String> locationColumn;
+    TableColumn<Appointment, String> appointmentLocationColumn;
     @FXML
-    TableColumn<Appointment, String> contactColumn;
+    TableColumn<Appointment, String> appointmentContactColumn;
     @FXML
-    TableColumn<Appointment, String> typeColumn;
+    TableColumn<Appointment, String> appointmentTypeColumn;
+    @FXML
+    TableColumn<Appointment, Integer> customerIdColumn;
+    @FXML
+    TableColumn<Appointment, Integer> userIdColumn;
     @FXML
     TableColumn<Appointment, ZonedDateTime> startDateTimeColumn;
     @FXML
     TableColumn<Appointment, ZonedDateTime> endDateTimeColumn;
-    @FXML
-    TableColumn<Appointment, Integer> customerIdColumn;
+
     @FXML
     ToggleGroup filterToggle;
     @FXML
@@ -87,10 +89,9 @@ public class appointmentController implements Initializable {
      *
      * @param event button click
      * @param switchPath path of new stage
-     * @throws IOException
      */
     public void switchScreen(ActionEvent event, String switchPath) throws IOException {
-        Parent parent = FXMLLoader.load(getClass().getResource(switchPath));
+        Parent parent = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(switchPath)));
         Scene scene = new Scene(parent);
         Stage window = (Stage) ((Node)event.getSource()).getScene().getWindow();
         window.setScene(scene);
@@ -98,40 +99,39 @@ public class appointmentController implements Initializable {
     }
 
     /**
-     * initToggleGroup
+     * toggleRadioButtons
      * creates new toggle group preventing multiple selections
      */
-    public void initToggleGroup() {
+    public void toggleRadioButtons() {
 
         filterToggle = new ToggleGroup();
 
-        noFilterButton.setToggleGroup(filterToggle);
-        weekFilterButton.setToggleGroup(filterToggle);
-        monthFilterButton.setToggleGroup(filterToggle);
+        for (RadioButton radioButton : Arrays.asList(emptyFilterRadio, weekFilterRadio, monthFilterRadio)) {
+            radioButton.setToggleGroup(filterToggle);
+        }
 
     }
 
     /**
-     * pressNoFilterButton
+     * emptyFilterRadioActivity
      * loads all appointments on page
      *
-     * @param event Button Click
      */
-    public void pressNoFilterButton(ActionEvent event) {
+    public void emptyFilterRadioActivity() {
         // only one selection at a time!
-        monthFilterButton.setSelected(false);
-        weekFilterButton.setSelected(false);
+        for (RadioButton radioButton : Arrays.asList(monthFilterRadio, weekFilterRadio)) {
+            radioButton.setSelected(false);
+        }
 
-        ObservableList<Appointment> allAppts;
+        ObservableList<Appointment> allAppointments;
         try {
-            allAppts = AppointmentDB.getAllAppointments();
+            allAppointments = AppointmentDB.getAllAppointments();
         }
         catch (SQLException error){
-            // Sometimes the connection to DB breaks here.(not sure why) If it does, re-connnect and try again.
             error.printStackTrace();
             DBConnection.openConnection();
             try {
-                allAppts = AppointmentDB.getAllAppointments();
+                allAppointments = AppointmentDB.getAllAppointments();
             } catch (SQLException anotherError) {
                 anotherError.printStackTrace();
                 ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
@@ -141,7 +141,7 @@ public class appointmentController implements Initializable {
             }
 
         }
-        populateAppointments(allAppts);
+        populateAppointments(allAppointments);
         selectedTimeLabel.setText("All Appointments");
         startRangeMarker = null;
 
@@ -149,19 +149,19 @@ public class appointmentController implements Initializable {
     }
 
     /**
-     * pressWeekFilterButton
+     * weekFilterRadioActivity
      * filters appts by week
      *
-     * @param event Button Click
      * @throws SQLException
      */
-    public void pressWeekFilterButton(ActionEvent event) throws SQLException {
+    public void weekFilterRadioActivity() throws SQLException {
         // Only one selection at a time!
-        monthFilterButton.setSelected(false);
-        noFilterButton.setSelected(false);
+        for (RadioButton radioButton : Arrays.asList(monthFilterRadio, emptyFilterRadio)) {
+            radioButton.setSelected(false);
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-        ObservableList<Appointment> filteredAppts = FXCollections.observableArrayList();
+        ObservableList<Appointment> filteredAppts;
         startRangeMarker = ZonedDateTime.now(LogonSession.getUserTimeZone());
         endRangeMarker = startRangeMarker.plusWeeks(1);
 
@@ -184,19 +184,19 @@ public class appointmentController implements Initializable {
     }
 
     /**
-     * pressMonthFilterButton
+     * monthFilterRadioActivity
      * filters appts by month
      *
-     * @param event Button Click
      * @throws SQLException
      */
-    public void pressMonthFilterButton(ActionEvent event) throws SQLException {
-        weekFilterButton.setSelected(false);
-        noFilterButton.setSelected(false);
+    public void monthFilterRadioActivity() throws SQLException {
+        for (RadioButton radioButton : Arrays.asList(weekFilterRadio, emptyFilterRadio)) {
+            radioButton.setSelected(false);
+        }
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-        ObservableList<Appointment> filteredAppts = FXCollections.observableArrayList();
+        ObservableList<Appointment> filteredAppts;
         startRangeMarker = ZonedDateTime.now(LogonSession.getUserTimeZone());
         endRangeMarker = startRangeMarker.plusMonths(1);
 
@@ -211,24 +211,20 @@ public class appointmentController implements Initializable {
         // update label
         selectedTimeLabel.setText(startRangeMarker.format(formatter) + " - " + endRangeMarker.format(formatter) + " " +
                 LogonSession.getUserTimeZone());
-
-
-
     }
 
     /**
-     * pressNextButton
-     * when filtering appointments moves the time block to next time block
+     * nextButtonActivity
+     * Moves selected Appointment time to next on the list
      *
-     * @param event Button Click
      * @throws SQLException
      */
-    public void pressNextButton(ActionEvent event) throws SQLException {
+    public void nextButtonActivity() throws SQLException {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        ObservableList<Appointment> filteredAppts = FXCollections.observableArrayList();
+        ObservableList<Appointment> filteredAppts;
 
-        if (filterToggle.getSelectedToggle() == weekFilterButton) {
+        if (filterToggle.getSelectedToggle() == weekFilterRadio) {
 
             ZonedDateTime startRange = startRangeMarker.plusWeeks(1);
             ZonedDateTime endRange = endRangeMarker.plusWeeks(1);
@@ -250,7 +246,7 @@ public class appointmentController implements Initializable {
                     LogonSession.getUserTimeZone());
 
         }
-        if (filterToggle.getSelectedToggle() == monthFilterButton) {
+        if (filterToggle.getSelectedToggle() == monthFilterRadio) {
 
             ZonedDateTime startRange = startRangeMarker.plusMonths(1);
             ZonedDateTime endRange = endRangeMarker.plusMonths(1);
@@ -276,22 +272,24 @@ public class appointmentController implements Initializable {
     }
 
     /**
-     * pressBackButton
-     * moves filtering time block back one unit
+     * backButtonActivity
+     * Moves selected Appointment time to the previous time on the list
      *
-     * @param event Button Click
      * @throws SQLException
      */
-    public void pressBackButton(ActionEvent event) throws SQLException {
+    public void backButtonActivity() throws SQLException {
 
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        ObservableList<Appointment> filteredAppts = FXCollections.observableArrayList();
+        ObservableList<Appointment> filteredAppts;
 
-        if (filterToggle.getSelectedToggle() == weekFilterButton) {
+        if (filterToggle.getSelectedToggle() == weekFilterRadio) {
 
-            ZonedDateTime startRange = startRangeMarker.minusWeeks(1);
-            ZonedDateTime endRange = endRangeMarker.minusWeeks(1);
+            ZonedDateTime startRange;
+            ZonedDateTime endRange;
+            startRange = startRangeMarker.minusWeeks(1);
+
+            endRange = endRangeMarker.minusWeeks(1);
 
             // update markers
             startRangeMarker = startRange;
@@ -310,10 +308,13 @@ public class appointmentController implements Initializable {
                     LogonSession.getUserTimeZone());
 
         }
-        if (filterToggle.getSelectedToggle() == monthFilterButton) {
+        if (filterToggle.getSelectedToggle() == monthFilterRadio) {
 
-            ZonedDateTime startRange = startRangeMarker.minusMonths(1);
-            ZonedDateTime endRange = endRangeMarker.minusMonths(1);
+            ZonedDateTime startRange;
+            ZonedDateTime endRange;
+
+            startRange = startRangeMarker.minusMonths(1);
+            endRange = endRangeMarker.minusMonths(1);
 
             // update markers
             startRangeMarker = startRange;
@@ -335,37 +336,33 @@ public class appointmentController implements Initializable {
     }
 
     /**
-     * pressDeleteButton
-     * deletes selected appts from DB and reloads appointments table
+     * deleteButtonActivity
+     * Deletes selected appointments from database and rebuilds the Appointments TableView
      *
-     * @param event Button Click
-     * @throws IOException
      * @throws SQLException
      */
-    public void pressDeleteButton(ActionEvent event) throws IOException, SQLException {
+    public void deleteButtonActivity() throws SQLException {
 
-        Appointment selectedAppt = appointmentTable.getSelectionModel().getSelectedItem();
+        Appointment selectedAppointment = appointmentTable.getSelectionModel().getSelectedItem();
 
-        // check that user selected an appointment in the table
-        if (selectedAppt == null) {
+        if (selectedAppointment == null) {
             ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
             Alert invalidInput = new Alert(Alert.AlertType.WARNING, "No selected Appointment", clickOkay);
             invalidInput.showAndWait();
-            return;
         }
         else {
-            // show alert and ensure user wants to delete
+            // Prompt alert for deletion confirmation
             ButtonType clickYes = ButtonType.YES;
             ButtonType clickNo = ButtonType.NO;
             Alert deleteAlert = new Alert(Alert.AlertType.WARNING, "Are you sure you want to delete Appointment: "
-                    + selectedAppt.getAppointmentID() + " ?", clickYes, clickNo);
+                    + selectedAppointment.getAppointmentID() + " ?", clickYes, clickNo);
             Optional<ButtonType> result = deleteAlert.showAndWait();
 
-            // if user confirms, delete appointment
+            // if confirmed, delete selected appointment
             if (result.get() == ButtonType.YES) {
-                Boolean success = AppointmentDB.deleteAppointment(selectedAppt.getAppointmentID());
+                Boolean success = AppointmentDB.deleteAppointment(selectedAppointment.getAppointmentID());
 
-                // if successful notify, if not show user error.
+                // if successful, else alert error.
                 if (success) {
                     ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
                     Alert deletedAppt = new Alert(Alert.AlertType.CONFIRMATION, "Appointment deleted", clickOkay);
@@ -375,8 +372,8 @@ public class appointmentController implements Initializable {
                 else {
                     //TODO - log error if it occurs
                     ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
-                    Alert deleteAppt = new Alert(Alert.AlertType.WARNING, "Failed to delete Appointment", clickOkay);
-                    deleteAppt.showAndWait();
+                    Alert deleteAppointment = new Alert(Alert.AlertType.WARNING, "Failed to delete Appointment", clickOkay);
+                    deleteAppointment.showAndWait();
 
                 }
 
@@ -390,61 +387,54 @@ public class appointmentController implements Initializable {
                 }
 
             }
-            else {
-                return;
-            }
         }
     }
 
     /**
-     * pressNewButton
+     * newButtonActivity
      * loads stage to add appointment
      *
      * @param event Button Click
      * @throws IOException
      */
-    public void pressNewButton(ActionEvent event) throws IOException {
+    public void newButtonActivity(ActionEvent event) throws IOException {
         switchScreen(event, "/View/addAppointmentView.fxml");
 
     }
 
     /**
-     * pressLogoutButton
+     * logoutButtonActivity
      * logs user out
      *
      * @param event Button Click
      * @throws IOException
      */
-    public void pressLogoutButton(ActionEvent event) throws IOException {
+    public void logoutButtonActivity(ActionEvent event) throws IOException {
         ButtonType clickYes = ButtonType.YES;
         ButtonType clickNo = ButtonType.NO;
-        Alert logOff = new Alert(Alert.AlertType.WARNING, "Are you sure you want to Log Off?", clickYes, clickNo);
-        Optional<ButtonType> result = logOff.showAndWait();
+        Alert exit = new Alert(Alert.AlertType.WARNING, "Are you sure you want to Log Off?", clickYes, clickNo);
+        Optional<ButtonType> result = exit.showAndWait();
 
         if (result.get() == ButtonType.YES) {
-            LogonSession.logOff();
+            LogonSession.exit();
             switchScreen(event, "/View/loginView.fxml");
         }
-        else {
-            return;
-        }
-
 
     }
 
     /**
-     * pressEditButton
+     * editButtonActivity
      * passes object to next stage and loads stage
      *
      * @param event Button Click
      * @throws IOException
      * @throws SQLException
      */
-    public void pressEditButton(ActionEvent event) throws IOException, SQLException {
+    public void editButtonActivity(ActionEvent event) throws IOException, SQLException {
 
-        Appointment selectedAppt = appointmentTable.getSelectionModel().getSelectedItem();
+        Appointment selectedAppointment = appointmentTable.getSelectionModel().getSelectedItem();
         // throw error if no selection
-        if (selectedAppt == null) {
+        if (selectedAppointment == null) {
             ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
             Alert invalidInput = new Alert(Alert.AlertType.WARNING, "No selected Appointment", clickOkay);
             invalidInput.showAndWait();
@@ -458,33 +448,33 @@ public class appointmentController implements Initializable {
         Scene scene = new Scene(parent);
         // get the controller and load our selected appointment into it
         editAppointmentController controller = loader.getController();
-        controller.initData(selectedAppt);
+        controller.initData(selectedAppointment);
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(scene);
 
     }
 
     /**
-     * pressCustomerButton
+     * customerButtonActivity
      * loads customer stage
      *
      * @param event Button Click
      * @throws IOException
      */
-    public void pressCustomerButton(ActionEvent event) throws IOException {
+    public void customerButtonActivity(ActionEvent event) throws IOException {
 
         switchScreen(event, "/View/customerView.fxml");
 
     }
 
     /**
-     * pressReportsPage
+     * reportsButtonActivity
      * loads reports page
      *
      * @param event Button Click
      * @throws IOException
      */
-    public void pressReportsPage(ActionEvent event) throws IOException {
+    public void reportsButtonActivity(ActionEvent event) throws IOException {
         switchScreen(event, "/View/reportsView.fxml");
 
     }
@@ -497,15 +487,16 @@ public class appointmentController implements Initializable {
     public void populateAppointments(ObservableList<Appointment> inputList) {
         // Takes an observable list of appointments and populates them on screen.
 
-        appointmentIdColumn.setCellValueFactory(new PropertyValueFactory<Appointment, Integer>("appointmentID"));
-        titleColumn.setCellValueFactory(new PropertyValueFactory<Appointment, String>("title"));
-        descriptionColumn.setCellValueFactory(new PropertyValueFactory<Appointment, String>("description"));
-        locationColumn.setCellValueFactory(new PropertyValueFactory<Appointment, String>("location"));
-        typeColumn.setCellValueFactory(new PropertyValueFactory<Appointment, String>("type"));
-        contactColumn.setCellValueFactory(new PropertyValueFactory<Appointment, String>("contactName"));
-        startDateTimeColumn.setCellValueFactory(new PropertyValueFactory<Appointment, ZonedDateTime>("startDateTime"));
-        endDateTimeColumn.setCellValueFactory(new PropertyValueFactory<Appointment, ZonedDateTime>("endDateTime"));
-        customerIdColumn.setCellValueFactory(new PropertyValueFactory<Appointment, Integer>("customerID"));
+        appointmentIDColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
+        appointmentTitleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+        appointmentDescriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
+        appointmentLocationColumn.setCellValueFactory(new PropertyValueFactory<>("location"));
+        appointmentTypeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
+        appointmentContactColumn.setCellValueFactory(new PropertyValueFactory<>("contactName"));
+        startDateTimeColumn.setCellValueFactory(new PropertyValueFactory<>("startDateTime"));
+        endDateTimeColumn.setCellValueFactory(new PropertyValueFactory<>("endDateTime"));
+        customerIdColumn.setCellValueFactory(new PropertyValueFactory<>("customerID"));
+        userIdColumn.setCellValueFactory(new PropertyValueFactory<>("userID"));
         appointmentTable.setItems(inputList);
 
     }
@@ -541,20 +532,20 @@ public class appointmentController implements Initializable {
     public void initialize(URL location, ResourceBundle resources)   {
 
 
-        noFilterButton.setSelected(true);
-        initToggleGroup();
+        emptyFilterRadio.setSelected(true);
+        toggleRadioButtons();
 
         // populate table view, handle DB connection breakage by retry.
-        ObservableList<Appointment> allAppts = null;
+        ObservableList<Appointment> allAppointments;
         try {
-            allAppts = AppointmentDB.getAllAppointments();
+            allAppointments = AppointmentDB.getAllAppointments();
         }
         catch (SQLException error){
             // Sometimes the connection to DB breaks here.(not sure why) If it does, re-connnect and try again.
             error.printStackTrace();
             DBConnection.openConnection();
             try {
-                allAppts = AppointmentDB.getAllAppointments();
+                allAppointments = AppointmentDB.getAllAppointments();
             } catch (SQLException anotherError) {
                 anotherError.printStackTrace();
                 ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
@@ -564,8 +555,8 @@ public class appointmentController implements Initializable {
             }
 
         }
-        populateAppointments(allAppts);
-        checkCanceled(allAppts);
+        populateAppointments(allAppointments);
+        checkCanceled(allAppointments);
 
 
     }

@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
@@ -24,14 +21,14 @@
                         <Font size="10.0" />
                     </font>
                 </Button>
-                <Button fx:id="minsPerContactButton" mnemonicParsing="false" onAction="#pressMinsPerContact" prefHeight="50.0" prefWidth="136.0" text="Minutes scheduled per Contact " textOverrun="CLIP" wrapText="true">
+                <Button fx:id="hoursPerContactButton" mnemonicParsing="false" onAction="#pressHoursPerContact" prefHeight="50.0" prefWidth="136.0" text="Hours scheduled per Contact " textOverrun="CLIP" wrapText="true">
                     <font>
                         <Font size="10.0" />
                     </font>
                 </Button>
             </children>
         </HBox>
-        <Button fx:id="backButton" layoutX="514.0" layoutY="335.0" mnemonicParsing="false" onAction="#pressBackButton" prefHeight="26.0" prefWidth="71.0" text="Back" />
+        <Button fx:id="backButton" layoutX="514.0" layoutY="335.0" mnemonicParsing="false" onAction="#backButtonActivity" prefHeight="26.0" prefWidth="71.0" text="Back" />
         <TextArea fx:id="reportTextField" editable="false" layoutX="23.0" layoutY="31.0" prefHeight="288.0" prefWidth="468.0" wrapText="true" />
     </children>
 

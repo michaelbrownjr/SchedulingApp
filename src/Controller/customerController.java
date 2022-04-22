@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -56,7 +57,7 @@ public class customerController implements Initializable {
      * @throws IOException
      */
     public void switchScreen(ActionEvent event, String switchPath) throws IOException {
-        Parent parent = FXMLLoader.load(getClass().getResource(switchPath));
+        Parent parent = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(switchPath)));
         Scene scene = new Scene(parent);
         Stage window = (Stage) ((Node)event.getSource()).getScene().getWindow();
         window.setScene(scene);
@@ -95,14 +96,14 @@ public class customerController implements Initializable {
     }
 
     /**
-     * pressEditButton
+     * editButtonActivity
      * passes object and loads next stage
      *
      * @param event Button Click
      * @throws IOException
      * @throws SQLException
      */
-    public void pressEditButton(ActionEvent event) throws IOException, SQLException {
+    public void editButtonActivity(ActionEvent event) throws IOException, SQLException {
 
         Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
         // throw error if no selection
@@ -127,14 +128,12 @@ public class customerController implements Initializable {
     }
 
     /**
-     * pressDeleteButton
+     * deleteButtonActivity
      * deletes selected object from DB
      *
-     * @param event Button Click
-     * @throws IOException
      * @throws SQLException
      */
-    public void pressDeleteButton(ActionEvent event) throws IOException, SQLException {
+    public void deleteButtonActivity() throws SQLException {
 
         Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
 
@@ -143,7 +142,6 @@ public class customerController implements Initializable {
             ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.WARNING, "No selected Customer", clickOkay);
             alert.showAndWait();
-            return;
         }
         else {
             // show alert and ensure user wants to delete
@@ -160,7 +158,7 @@ public class customerController implements Initializable {
                 Boolean customerSuccess = CustomerDB.deleteCustomer(selectedCustomer.getCustomerID());
 
 
-                // if successful notify, if not show user error.
+                // if successful prompt success, if not alert user error.
                 if (customerSuccess && customerApptSuccess) {
                     ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
                     Alert deletedCustomer = new Alert(Alert.AlertType.CONFIRMATION,
@@ -171,13 +169,13 @@ public class customerController implements Initializable {
                 else {
 
                     ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
-                    Alert deleteAppt = new Alert(Alert.AlertType.WARNING,
+                    Alert deleteAppointment = new Alert(Alert.AlertType.WARNING,
                             "Failed to delete Customer or related appointments ", clickOkay);
-                    deleteAppt.showAndWait();
+                    deleteAppointment.showAndWait();
 
                 }
 
-                // Re-load appointments on screen
+                // Re-load appointments on view
                 try {
                     populateCustomers(CustomerDB.getAllCustomers());
                 }
@@ -186,20 +184,17 @@ public class customerController implements Initializable {
                 }
 
             }
-            else {
-                return;
-            }
         }
     }
 
     /**
-     * pressBackButton
+     * backButtonActivity
      * loads previous stage
      *
      * @param event ButtonClick
      * @throws IOException
      */
-    public void pressBackButton(ActionEvent event) throws IOException {
+    public void backButtonActivity(ActionEvent event) throws IOException {
 
         switchScreen(event, "/View/appointmentView.fxml");
 

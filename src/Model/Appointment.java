@@ -1,47 +1,27 @@
 package Model;
 
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableValue;
-
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class Appointment {
-    private Integer appointmentID;
-    private String title;
-    private String description;
-    private String location;
-    private String type;
-    private Timestamp startDateTime;
-    private Timestamp endDateTime;
-    private Timestamp createDate;
-    private String createBy;
-    private Timestamp lastUpdateDateTime;
-    private String lastUpdateBy;
-    private Integer customerID;
-    private Integer userID;
-    private Integer contactID;
-    private String contactName;
+    private final Integer appointmentID;
+    private final String title;
+    private final String description;
+    private final String location;
+    private final String type;
+    private final Timestamp startDateTime;
+    private final Timestamp endDateTime;
+    private final Integer customerID;
+    private final Integer userID;
+    private final String contactName;
 
     /**
      * Appointment constructor
      *
      * @param inputAppointmentID appointment ID (Primary Key).
-     * @param inputContactID  contact ID (Foregin Key).
      * @param inputContactName Name of contact.
-     * @param inputCreateBy Name of user who created the appointment in the DB.
-     * @param inputCreateDate Date appointment was created.
      * @param inputCustomerID customer ID (Foreign Key).
      * @param inputDescription appointment description.
      * @param inputEndDateTime end date/time of appointment.
-     * @param inputLastUpdateBy Last person to update the appointment.
-     * @param inputLastUpdateDateTime Time/Date of last update.
      * @param inputLocation Appointment Location.
      * @param inputStartDateTime Start Date/time of app
      * @param inputTitle Appointment title
@@ -49,11 +29,7 @@ public class Appointment {
      * @param inputUserID User ID(Foreign Key).
      *
      */
-    public Appointment(Integer inputAppointmentID, String inputTitle, String inputDescription, String inputLocation,
-                       String inputType, Timestamp inputStartDateTime, Timestamp inputEndDateTime,
-                       Timestamp inputCreateDate, String inputCreateBy, Timestamp inputLastUpdateDateTime,
-                       String inputLastUpdateBy, Integer inputCustomerID, Integer inputUserID, Integer inputContactID,
-                       String inputContactName) {
+    public Appointment(Integer inputAppointmentID, String inputTitle, String inputDescription, String inputLocation, String inputType, Timestamp inputStartDateTime, Timestamp inputEndDateTime, Integer inputCustomerID, Integer inputUserID, String inputContactName) {
 
         appointmentID = inputAppointmentID;
         title = inputTitle;
@@ -62,13 +38,8 @@ public class Appointment {
         type = inputType;
         startDateTime = inputStartDateTime;
         endDateTime = inputEndDateTime;
-        createDate = inputCreateDate;
-        createBy = inputCreateBy;
-        lastUpdateDateTime = inputLastUpdateDateTime;
-        lastUpdateBy = inputLastUpdateBy;
         customerID = inputCustomerID;
         userID = inputUserID;
-        contactID = inputContactID;
         contactName = inputContactName;
 
     }
@@ -132,38 +103,6 @@ public class Appointment {
     }
 
     /**
-     * Getter - create date time
-     * @return create date of appointment
-     */
-    public Timestamp getCreateDate() {
-        return createDate;
-    }
-
-    /**
-     * Getter - created by
-     * @return who created appointment
-     */
-    public String getCreateBy() {
-        return createBy;
-    }
-
-    /**
-     * Getter - last update date time
-     * @return last update of appointment
-     */
-    public Timestamp getLastUpdateDateTime() {
-        return lastUpdateDateTime;
-    }
-
-    /**
-     * Getter - last updated by
-     * @return datetime of last update
-     */
-    public String getLastUpdateBy() {
-        return lastUpdateBy;
-    }
-
-    /**
      * getter - customer ID
      * @return customer ID
      */
@@ -177,14 +116,6 @@ public class Appointment {
      */
     public Integer getUserID() {
         return userID;
-    }
-
-    /**
-     * Getter - contact ID
-     * @return contact ID
-     */
-    public Integer getContactID() {
-        return contactID;
     }
 
     /**
