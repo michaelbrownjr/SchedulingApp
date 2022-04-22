@@ -2,6 +2,7 @@ package Controller;
 
 import Model.Customer;
 import Model.CustomerDB;
+import Model.LogonSession;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -67,14 +68,14 @@ public class editCustomerController implements Initializable {
     }
 
     /**
-     * switchScreen
+     * screenChange
      * loads new stage
      *
      * @param event Button Click
      * @param switchPath path to new stage
      * @throws IOException
      */
-    public void switchScreen(ActionEvent event, String switchPath) throws IOException {
+    public void screenChange(ActionEvent event, String switchPath) throws IOException {
         Parent parent;
         parent = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(switchPath)));
         Scene scene = new Scene(parent);
@@ -112,14 +113,13 @@ public class editCustomerController implements Initializable {
 
         }
 
-        // CustomerDB updateCustomer
         Boolean success = CustomerDB.updateCustomer(division, name, address, postalCode, phone, customerID);
 
         if (success) {
             ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Appointment updated successfully!", clickOkay);
             alert.showAndWait();
-            switchScreen(event, "/View/customerView.fxml");
+            screenChange(event, "/View/customerView.fxml");
         }
         else {
             ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
@@ -151,7 +151,28 @@ public class editCustomerController implements Initializable {
      * @throws IOException
      */
     public void backButtonActivity(ActionEvent event) throws IOException {
-        switchScreen(event, "/View/customerView.fxml");
+
+        ButtonType clickYes = ButtonType.YES;
+        ButtonType clickNo = ButtonType.NO;
+
+        // show alert and ensure user wants to exit
+        Alert exit = new Alert(Alert.AlertType.WARNING,"Are you sure you don't want to save your changes?", clickYes, clickNo);
+        exit.setTitle("Alert!");
+        exit.setHeaderText("Confirm");
+
+
+
+        exit.showAndWait().ifPresent((response -> {
+            if (response == clickYes) {
+                try {
+                    screenChange(event, "/View/customerView.fxml");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }));
+
+//        screenChange(event, "/View/customerView.fxml");
     }
 
     /**

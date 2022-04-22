@@ -42,14 +42,14 @@ public class addCustomerController implements Initializable {
     Button backButton;
 
     /**
-     * switchScreen
+     * screenChange
      * Loads new stage
      *
      * @param event button click
      * @param switchPath path to new stage
      * @throws IOException
      */
-    public void switchScreen(ActionEvent event, String switchPath) throws IOException {
+    public void screenChange(ActionEvent event, String switchPath) throws IOException {
         Parent parent = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(switchPath)));
         Scene scene = new Scene(parent);
         Stage window = (Stage) ((Node)event.getSource()).getScene().getWindow();
@@ -95,7 +95,7 @@ public class addCustomerController implements Initializable {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Customer added successfully!", clickOkay);
             alert.showAndWait();
             clearButtonActivity(event);
-            switchScreen(event, "/View/customerView.fxml");
+            screenChange(event, "/View/customerView.fxml");
         }
         else {
             ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
@@ -129,7 +129,7 @@ public class addCustomerController implements Initializable {
      * @throws IOException
      */
     public void backButtonActivity(ActionEvent event) throws IOException {
-        switchScreen(event, "/View/customerView.fxml");
+        screenChange(event, "/View/customerView.fxml");
 
     }
 

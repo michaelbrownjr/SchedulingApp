@@ -37,14 +37,14 @@ public class reportsController implements Initializable {
     Button backButton;
 
     /**
-     * switchScreen
+     * screenChange
      * loads new stage
      *
      * @param event Button Click
      * @param switchPath path to new stage
      * @throws IOException
      */
-    public void switchScreen(ActionEvent event, String switchPath) throws IOException {
+    public void screenChange(ActionEvent event, String switchPath) throws IOException {
         Parent parent = FXMLLoader.load(getClass().getResource(switchPath));
         Scene scene = new Scene(parent);
         Stage window = (Stage) ((Node)event.getSource()).getScene().getWindow();
@@ -60,7 +60,7 @@ public class reportsController implements Initializable {
      * @throws IOException
      */
     public void backButtonActivity(ActionEvent event) throws IOException {
-        switchScreen(event, "/View/appointmentView.fxml");
+        screenChange(event, "/View/appointmentView.fxml");
 
     }
 

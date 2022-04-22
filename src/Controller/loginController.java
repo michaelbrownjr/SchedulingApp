@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.time.ZoneId;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
 /*
 * LoginPageController
@@ -50,13 +51,13 @@ public class loginController implements Initializable {
     private Label zoneLabel;
 
     /**
-     * switchScreen
+     * screenChange
      * loads new stage
      * @param event Button Click
      * @param switchPath path to new stage
      * @throws IOException
      */
-    public void switchScreen(ActionEvent event, String switchPath) throws IOException {
+    public void screenChange(ActionEvent event, String switchPath) throws IOException {
 
         Parent parent = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(switchPath)));
         Scene scene = new Scene(parent);
@@ -110,7 +111,7 @@ public class loginController implements Initializable {
                 invalidInput.showAndWait();
             }
 
-            switchScreen(event, "/View/appointmentView.fxml");
+            screenChange(event, "/View/appointmentView.fxml");
 
         }
         else {
@@ -144,9 +145,22 @@ public class loginController implements Initializable {
      * @param event Button Click
      */
     public void exitButtonActivity(ActionEvent event) {
-        LogonSession.exit();
-        System.exit(0);
+        ButtonType clickYes = ButtonType.YES;
+        ButtonType clickNo = ButtonType.NO;
 
+        // show alert and ensure user wants to exit
+        Alert exit = new Alert(Alert.AlertType.WARNING,"Are you sure you want to exit?", clickYes, clickNo);
+        exit.setTitle("Alert!");
+        exit.setHeaderText("Confirm");
+
+
+
+        exit.showAndWait().ifPresent((response -> {
+            if (response == clickYes) {
+                LogonSession.exit();
+                System.exit(0);
+            }
+        }));
     }
 
     /**

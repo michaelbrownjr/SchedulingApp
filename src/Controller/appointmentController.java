@@ -84,13 +84,13 @@ public class appointmentController implements Initializable {
     ZonedDateTime endRangeMarker;
 
     /**
-     * switchScreen
+     * screenChange
      * loads new stage
      *
      * @param event button click
      * @param switchPath path of new stage
      */
-    public void switchScreen(ActionEvent event, String switchPath) throws IOException {
+    public void screenChange(ActionEvent event, String switchPath) throws IOException {
         Parent parent = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(switchPath)));
         Scene scene = new Scene(parent);
         Stage window = (Stage) ((Node)event.getSource()).getScene().getWindow();
@@ -398,8 +398,7 @@ public class appointmentController implements Initializable {
      * @throws IOException
      */
     public void newButtonActivity(ActionEvent event) throws IOException {
-        switchScreen(event, "/View/addAppointmentView.fxml");
-
+        screenChange(event, "/View/addAppointmentView.fxml");
     }
 
     /**
@@ -413,13 +412,17 @@ public class appointmentController implements Initializable {
         ButtonType clickYes = ButtonType.YES;
         ButtonType clickNo = ButtonType.NO;
         Alert exit = new Alert(Alert.AlertType.WARNING, "Are you sure you want to Log Off?", clickYes, clickNo);
-        Optional<ButtonType> result = exit.showAndWait();
 
-        if (result.get() == ButtonType.YES) {
-            LogonSession.exit();
-            switchScreen(event, "/View/loginView.fxml");
-        }
-
+        exit.showAndWait().ifPresent((response -> {
+            if (response == clickYes) {
+                LogonSession.exit();
+                try {
+                    screenChange(event, "/View/loginView.fxml");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }));
     }
 
     /**
@@ -463,7 +466,7 @@ public class appointmentController implements Initializable {
      */
     public void customerButtonActivity(ActionEvent event) throws IOException {
 
-        switchScreen(event, "/View/customerView.fxml");
+        screenChange(event, "/View/customerView.fxml");
 
     }
 
@@ -475,7 +478,7 @@ public class appointmentController implements Initializable {
      * @throws IOException
      */
     public void reportsButtonActivity(ActionEvent event) throws IOException {
-        switchScreen(event, "/View/reportsView.fxml");
+        screenChange(event, "/View/reportsView.fxml");
 
     }
 

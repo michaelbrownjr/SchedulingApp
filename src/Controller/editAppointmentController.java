@@ -57,14 +57,14 @@ public class editAppointmentController implements Initializable {
 
 
     /**
-     * switchScreen
+     * screenChange
      * loads new stage
      *
      * @param event Button Click
      * @param switchPath path to new stage
      * @throws IOException
      */
-    public void switchScreen(ActionEvent event, String switchPath) throws IOException {
+    public void screenChange(ActionEvent event, String switchPath) throws IOException {
         Parent parent = FXMLLoader.load(getClass().getResource(switchPath));
         Scene scene = new Scene(parent);
         Stage window = (Stage) ((Node)event.getSource()).getScene().getWindow();
@@ -84,7 +84,7 @@ public class editAppointmentController implements Initializable {
 
         // get the values to populate into the Date picker
         try {
-            LocalDate apptDate = selectedAppointment.getStartDateTime().toLocalDateTime().toLocalDate();
+            selectedAppointment.getStartDateTime().toLocalDateTime().toLocalDate();
         }
         catch (NullPointerException error) {
             ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
@@ -227,7 +227,7 @@ public class editAppointmentController implements Initializable {
      * @throws IOException
      */
     public void backButtonActivity(ActionEvent event) throws IOException {
-        switchScreen(event, "/View/appointmentView.fxml");
+        screenChange(event, "/View/appointmentView.fxml");
 
     }
 
@@ -241,10 +241,10 @@ public class editAppointmentController implements Initializable {
      */
     public void saveButtonActivity(ActionEvent event) throws SQLException, IOException {
 
-        boolean validStartDateTime = true;
-        boolean validEndDateTime = true;
-        Boolean validOverlap = true;
-        Boolean validBusinessHours = true;
+        boolean validStartDateTime;
+        boolean validEndDateTime;
+        Boolean validOverlap;
+        Boolean validBusinessHours;
         String errorMessage = "";
 
         Integer apptID = Integer.parseInt(appointmentIDTextBox.getText());
@@ -343,7 +343,7 @@ public class editAppointmentController implements Initializable {
                 ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
                 Alert invalidInput = new Alert(Alert.AlertType.CONFIRMATION, "Appointment updated successfully!", clickOkay);
                 invalidInput.showAndWait();
-                switchScreen(event, "/View/appointmentView.fxml");
+                screenChange(event, "/View/appointmentView.fxml");
             }
             else {
                 ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);

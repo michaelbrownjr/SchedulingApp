@@ -49,14 +49,14 @@ public class customerController implements Initializable {
     TableColumn<Customer, String> phoneNumberColumn;
 
     /**
-     * switchScreen
+     * screenChange
      * loads next stage
      *
      * @param event Button Click
      * @param switchPath Path to next stage
      * @throws IOException
      */
-    public void switchScreen(ActionEvent event, String switchPath) throws IOException {
+    public void screenChange(ActionEvent event, String switchPath) throws IOException {
         Parent parent = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(switchPath)));
         Scene scene = new Scene(parent);
         Stage window = (Stage) ((Node)event.getSource()).getScene().getWindow();
@@ -91,7 +91,7 @@ public class customerController implements Initializable {
      * @throws IOException
      */
     public void pressAddButton(ActionEvent event) throws IOException {
-        switchScreen(event, "/View/addCustomerView.fxml");
+        screenChange(event, "/View/addCustomerView.fxml");
 
     }
 
@@ -196,7 +196,7 @@ public class customerController implements Initializable {
      */
     public void backButtonActivity(ActionEvent event) throws IOException {
 
-        switchScreen(event, "/View/appointmentView.fxml");
+        screenChange(event, "/View/appointmentView.fxml");
 
     }
 

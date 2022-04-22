@@ -52,14 +52,14 @@ public class addAppointmentController implements Initializable {
     Button backButton;
 
     /**
-     * switchScreen
+     * screenChange
      * Loads different stage
      *
      * @param event Button click
      * @param switchPath path to new stage
      * @throws IOException
      */
-    public void switchScreen(ActionEvent event, String switchPath) throws IOException {
+    public void screenChange(ActionEvent event, String switchPath) throws IOException {
         Parent parent = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(switchPath)));
         Scene scene = new Scene(parent);
         Stage window = (Stage) ((Node)event.getSource()).getScene().getWindow();
@@ -181,7 +181,7 @@ public class addAppointmentController implements Initializable {
                 ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Appointment added successfully!", clickOkay);
                 alert.showAndWait();
-                switchScreen(event, "/View/appointmentView.fxml");
+                screenChange(event, "/View/appointmentView.fxml");
             }
             else {
                 ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
@@ -220,7 +220,7 @@ public class addAppointmentController implements Initializable {
      * @throws IOException
      */
     public void backButtonActivity(ActionEvent event) throws IOException {
-        switchScreen(event, "/View/appointmentView.fxml");
+        screenChange(event, "/View/appointmentView.fxml");
 
     }
 
