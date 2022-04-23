@@ -11,17 +11,17 @@
     <children>
         <HBox layoutX="14.0" layoutY="335.0" prefHeight="50.0" prefWidth="477.0">
             <children>
-                <Button fx:id="ApptByReportButton" mnemonicParsing="false" onAction="#pressApptByReportButton" prefHeight="50.0" prefWidth="136.0" text="Customer Appointments by type and month " textOverrun="CLIP" wrapText="true">
+                <Button fx:id="appointmentReportButton" mnemonicParsing="false" onAction="#appointmentReportButton" prefHeight="50.0" prefWidth="136.0" text="Customer Appointments by type and month " textOverrun="CLIP" wrapText="true">
                     <font>
                         <Font size="10.0" />
                     </font>
                 </Button>
-                <Button fx:id="contactScheduleReportButton" mnemonicParsing="false" onAction="#pressContactSchedule" prefHeight="50.0" prefWidth="136.0" text="Contact Schedule " textOverrun="CLIP" wrapText="true">
+                <Button fx:id="contactScheduleReportButton" mnemonicParsing="false" onAction="#contactScheduleActivity" prefHeight="50.0" prefWidth="136.0" text="Contact Schedule " textOverrun="CLIP" wrapText="true">
                     <font>
                         <Font size="10.0" />
                     </font>
                 </Button>
-                <Button fx:id="hoursPerContactButton" mnemonicParsing="false" onAction="#pressHoursPerContact" prefHeight="50.0" prefWidth="136.0" text="Hours scheduled per Contact " textOverrun="CLIP" wrapText="true">
+                <Button fx:id="hoursPerContactButton" mnemonicParsing="false" onAction="#hoursPerContactActivity" prefHeight="50.0" prefWidth="136.0" text="Hours scheduled per Contact " textOverrun="CLIP" wrapText="true">
                     <font>
                         <Font size="10.0" />
                     </font>

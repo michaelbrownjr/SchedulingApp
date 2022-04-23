@@ -9,7 +9,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-
+/**
+ * This class gathers all the contacts from the Contacts table within the Database.
+ */
 public class ContactDB {
 
     /**

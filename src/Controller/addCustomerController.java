@@ -19,6 +19,10 @@ import java.sql.SQLException;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+/**
+ * addCustomerControll
+ * This class allows the user to add a customer in the customer View.
+ */
 public class addCustomerController implements Initializable {
     @FXML
     TextField customerIDTextBox;
@@ -43,7 +47,7 @@ public class addCustomerController implements Initializable {
 
     /**
      * screenChange
-     * Loads new stage
+     * Loads new view
      *
      * @param event button click
      * @param switchPath path to new stage
@@ -152,21 +156,29 @@ public class addCustomerController implements Initializable {
 
         //Lambda Expression - Listener for combo box change
         countryComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal == null) {
-                divisionComboBox.getItems().clear();
-                divisionComboBox.setDisable(true);
-
-            }
-            else {
-                divisionComboBox.setDisable(false);
-                try {
-                    divisionComboBox.setItems(CustomerDB.getFilteredDivisions(countryComboBox.getValue()));
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
-
-            }
+            filterControlCase(newVal);
         });
 
+    }
+
+    /**
+     * filterControlCase filters division on Customers
+     * @param newVal
+     */
+    private void filterControlCase(String newVal) {
+        if (newVal == null) {
+            divisionComboBox.getItems().clear();
+            divisionComboBox.setDisable(true);
+
+        }
+        else {
+            divisionComboBox.setDisable(false);
+            try {
+                divisionComboBox.setItems(CustomerDB.getFilteredDivisions(countryComboBox.getValue()));
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+
+        }
     }
 }

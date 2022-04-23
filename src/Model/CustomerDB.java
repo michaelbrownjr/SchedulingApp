@@ -13,27 +13,12 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * This class gathers all the customers from the Customers table within the Database.
+ */
 public class CustomerDB {
 
-    private static ObservableList<Customer> allCustomers = FXCollections.observableArrayList();
     private static String error;
-
-//    public static Customer getCustomer(int id) {
-//        try {
-//            Statement statement = DBConnection.getConnection().createStatement();
-//            String query = "SELECT * FROM customers WHERE customerId='" + id + "'";
-//            ResultSet rs = statement.executeQuery(query);
-//            if (rs.next()) {
-//                Customer customer = new Customer();
-//                customer.setCustomerName(rs.getString("customerName"));
-//                statement.close();
-//                return customer;
-//            }
-//        } catch (SQLException e) {
-//            System.out.println("SQLException: " + e.getMessage());
-//        }
-//        return null;
-//    }
 
 
     public static ObservableList<Customer> getAllCustomers() throws SQLException {
@@ -176,7 +161,6 @@ public class CustomerDB {
             return true;
         }
         catch (SQLException e) {
-            //TODO- log error
             e.printStackTrace();
             sqlCommand.close();
             return false;

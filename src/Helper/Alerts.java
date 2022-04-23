@@ -9,6 +9,13 @@ import java.util.ResourceBundle;
 
 public class Alerts implements Initializable {
 
+    /** infoDialog
+     * Custom Alert message to pass for special alert cases not supported by library
+     *
+     * @param title
+     * @param header
+     * @param content
+     */
     public static void infoDialog(String title, String header, String content){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);

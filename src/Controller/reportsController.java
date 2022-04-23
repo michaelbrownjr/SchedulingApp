@@ -24,9 +24,13 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
+/**
+ * This class creates three ways to create a report reflecting the information from
+ * the Appointment view and/or the Customer view.
+ */
 public class reportsController implements Initializable {
     @FXML
-    Button ApptByReportButton;
+    Button appointmentReportButton;
     @FXML
     Button contactScheduleReportButton;
     @FXML
@@ -65,13 +69,13 @@ public class reportsController implements Initializable {
     }
 
     /**
-     * pressApptByReportButton
+     * appointmentReportButton
      * populates first report
      *
      * @param event Button Click
      * @throws SQLException
      */
-    public void pressApptByReportButton(ActionEvent event) throws SQLException {
+    public void appointmentReportButton(ActionEvent event) throws SQLException {
 
         ObservableList<String> reportStrings = AppointmentDB.reportTotalsByTypeAndMonth();
 
@@ -80,13 +84,13 @@ public class reportsController implements Initializable {
     }
 
     /**
-     * pressHoursPerContact
+     * hoursPerContactActivity
      * populates second report
      *
      * @param event Button Click
      * @throws SQLException
      */
-    public void pressHoursPerContact(ActionEvent event ) throws SQLException {
+    public void hoursPerContactActivity(ActionEvent event ) throws SQLException {
         ObservableList<String> contacts = ContactDB.getAllContactName();
 
         for (String contact: contacts) {
@@ -99,13 +103,13 @@ public class reportsController implements Initializable {
 
 
     /**
-     * pressContactSchedule
+     * contactScheduleActivity
      * populates 3rd report
      *
      * @param event Button Click
      * @throws SQLException
      */
-    public void pressContactSchedule(ActionEvent event) throws SQLException {
+    public void contactScheduleActivity(ActionEvent event) throws SQLException {
 
         ObservableList<String> contacts = ContactDB.getAllContactName();
 

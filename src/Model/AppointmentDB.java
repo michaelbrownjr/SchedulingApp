@@ -8,6 +8,9 @@ import java.sql.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * This class gathers all the appointment from the Appointments table within the Database.
+ */
 public class AppointmentDB {
 
     /**
@@ -36,32 +39,33 @@ public class AppointmentDB {
         sqlCommand.setString(1, startRangeString);
         sqlCommand.setString(2, endRangeString);
 
-        ResultSet results = sqlCommand.executeQuery();
+        try (ResultSet results = sqlCommand.executeQuery()) {
 
-        while( results.next() ) {
-            // get data from the returned rows
-            Integer appointmentID = results.getInt("Appointment_ID");
-            String title = results.getString("Title");
-            String description = results.getString("Description");
-            String location = results.getString("Location");
-            String type = results.getString("Type");
-            Timestamp startDateTime = results.getTimestamp("Start");
-            Timestamp endDateTime = results.getTimestamp("End");
-            Timestamp createdDate = results.getTimestamp("Create_Date");
-            String createdBy = results.getString("Created_by");
-            Timestamp lastUpdateDateTime = results.getTimestamp("Last_Update");
-            String lastUpdatedBy = results.getString("Last_Updated_By");
-            Integer customerID = results.getInt("Customer_ID");
-            Integer userID = results.getInt("User_ID");
-            Integer contactID = results.getInt("Contact_ID");
-            String contactName = results.getString("Contact_Name");
+            while (results.next()) {
+                // get data from the returned rows
+                Integer appointmentID = results.getInt("Appointment_ID");
+                String title = results.getString("Title");
+                String description = results.getString("Description");
+                String location = results.getString("Location");
+                String type = results.getString("Type");
+                Timestamp startDateTime = results.getTimestamp("Start");
+                Timestamp endDateTime = results.getTimestamp("End");
+                Timestamp createdDate = results.getTimestamp("Create_Date");
+                String createdBy = results.getString("Created_by");
+                Timestamp lastUpdateDateTime = results.getTimestamp("Last_Update");
+                String lastUpdatedBy = results.getString("Last_Updated_By");
+                Integer customerID = results.getInt("Customer_ID");
+                Integer userID = results.getInt("User_ID");
+                Integer contactID = results.getInt("Contact_ID");
+                String contactName = results.getString("Contact_Name");
 
-            // populate into an appt object
-            Appointment newAppt = new Appointment(
-                    appointmentID, title, description, location, type, startDateTime, endDateTime,
-                    customerID, userID, contactName
-            );
-            filteredAppts.add(newAppt);
+                // populate into an appt object
+                Appointment newAppt = new Appointment(
+                        appointmentID, title, description, location, type, startDateTime, endDateTime,
+                        customerID, userID, contactName
+                );
+                filteredAppts.add(newAppt);
+            }
         }
 
         sqlCommand.close();

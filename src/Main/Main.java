@@ -9,6 +9,10 @@ import javafx.stage.Stage;
 
 import java.util.Objects;
 
+/**
+ * This class creates a Scheduling app that connects to a DB opening a connect to manupulate the
+ * scheduling data from the database.
+ */
 public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {

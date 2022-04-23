@@ -21,6 +21,12 @@ import java.time.format.DateTimeParseException;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+/**
+ * addAppointmentController
+ * Creates a new Appointment from a new view that will be displayed
+ * in the previous Appointment View.
+ *
+ */
 public class addAppointmentController implements Initializable {
     @FXML
     TextField titleTextBox;
@@ -152,9 +158,9 @@ public class addAppointmentController implements Initializable {
             errorMessage += "Invalid Customer Overlap. Cannot double book customers.\n";
         }
 
-        System.out.println(errorMessage); // TODO - logger
+        System.out.println(errorMessage);
 
-        // INPUT VALIDATION - if any requirements are false, show error and end method.
+
         if (!validOverlap || !validBusinessHours || !validEndDateTime || !validStartDateTime) {
             ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
             Alert invalidInput = new Alert(Alert.AlertType.WARNING, errorMessage, clickOkay);
@@ -162,8 +168,6 @@ public class addAppointmentController implements Initializable {
 
         }
         else {
-            // if input is valid we insert into DB and display success and clear.
-            // prep start and endTime by turning them into a zonedDateTime so we can enter in the DB in UTC.
             zonedStartDateTime = ZonedDateTime.of(startDateTime, LogonSession.getUserTimeZone());
             zonedEndDateTime = ZonedDateTime.of(endDateTime, LogonSession.getUserTimeZone());
             String loggedOnUserName = LogonSession.getCurrentUser().getUsername();
@@ -172,11 +176,11 @@ public class addAppointmentController implements Initializable {
             zonedStartDateTime = zonedStartDateTime.withZoneSameInstant(ZoneOffset.UTC);
             zonedEndDateTime = zonedEndDateTime.withZoneSameInstant(ZoneOffset.UTC);
 
-            // Add appt to DB
+
             Boolean success = AppointmentDB.addAppointment(title, description, location, type, zonedStartDateTime,
                     zonedEndDateTime, loggedOnUserName, loggedOnUserName, customerID, userID, contactID );
 
-            // notify user we successfully added to DB, or if there was an error.
+
             if (success) {
                 ButtonType clickOkay = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Appointment added successfully!", clickOkay);
@@ -195,7 +199,7 @@ public class addAppointmentController implements Initializable {
 
     /**
      * clearButtonActivity
-     * clears values from the page
+     * clears all values from the page
      */
     public void clearButtonActivity() {
         titleTextBox.clear();
@@ -246,9 +250,6 @@ public class addAppointmentController implements Initializable {
         ZonedDateTime endBusinessHours = ZonedDateTime.of(apptDate, LocalTime.of(22, 0),
                 ZoneId.of("America/New_York"));
 
-        // If startTime is before or after business hours
-        // If end time is before or after business hours
-        // if startTime is after endTime - these should cover all possible times entered and validate input.
         return !(startZonedDateTime.isBefore(startBusinessHours) | startZonedDateTime.isAfter(endBusinessHours) |
                 endZonedDateTime.isBefore(startBusinessHours) | endZonedDateTime.isAfter(endBusinessHours) |
                 startZonedDateTime.isAfter(endZonedDateTime));
@@ -270,13 +271,9 @@ public class addAppointmentController implements Initializable {
     public Boolean validateCustomerOverlap(Integer inputCustomerID, LocalDateTime startDateTime,
                                            LocalDateTime endDateTime, LocalDate apptDate) throws SQLException {
 
-        // Get list of appointments that might have conflicts
         ObservableList<Appointment> possibleConflicts = AppointmentDB.getCustomerFilteredAppointments(apptDate,
                 inputCustomerID);
-        // for each possible conflict, evaluate:
-        // if conflictApptStart is before newApptstart and conflictApptEnd is after newApptStart(starts before ends after)
-        // if conflictApptStart is before newApptEnd & conflictApptStart after newApptStart (startime anywhere in appt)
-        // if endtime is before end and endtime is after start (endtime falls anywhere in appt)
+
         if (possibleConflicts.isEmpty()) {
             return true;
         }
@@ -285,15 +282,15 @@ public class addAppointmentController implements Initializable {
                 LocalDateTime conflictStart = conflictAppt.getStartDateTime().toLocalDateTime();
                 LocalDateTime conflictEnd = conflictAppt.getEndDateTime().toLocalDateTime();
 
-                // Conflict starts before and Conflict ends any time after new appt ends - overlap
+
                 if (conflictStart.isBefore(startDateTime) & conflictEnd.isAfter(endDateTime)) {
                     return false;
                 }
-                // ConflictAppt start time falls anywhere in the new appt
+
                 if (conflictStart.isBefore(endDateTime) & conflictStart.isAfter(startDateTime)) {
                     return false;
                 }
-                // ConflictAppt end time falls anywhere in the new appt
+
                 return !(conflictEnd.isBefore(endDateTime) & conflictEnd.isAfter(startDateTime));
 
             }
@@ -303,7 +300,6 @@ public class addAppointmentController implements Initializable {
     }
 
     /**
-     * initialize
      * initialize the stage and items on screen
      *
      * Lambda expression - disables users from picking dates in past or weekend without needing a whole new method.
@@ -312,9 +308,9 @@ public class addAppointmentController implements Initializable {
      */
     public void initialize(URL location, ResourceBundle resources) {
 
-        timeZoneLabel.setText("Your Time Zone:" + LogonSession.getUserTimeZone());
+        timeZoneLabel.setText("Your Time Zone is " + LogonSession.getUserTimeZone());
 
-        //Lambda Expression - Disable users from picking dates in the past or weekend.
+        //Lambda Expression - Disables users from picking dates in the past or weekend.
 
         apptDatePicker.setDayCellFactory(picker -> new DateCell() {
             @Override

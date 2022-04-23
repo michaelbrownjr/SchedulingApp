@@ -4,11 +4,12 @@ import Helper.DBConnection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import javax.sql.DataSource;
 import java.sql.*;
-import java.time.ZoneId;
-import java.util.Locale;
 
+
+/**
+ * This class gets all the users from the DB
+ */
 public class UserDB {
     /**
      * getAllUserID

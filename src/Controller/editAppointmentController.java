@@ -22,6 +22,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ResourceBundle;
 
+/**
+ * This class allows the user to edit an Appointment in the Appointment list.
+ */
 public class editAppointmentController implements Initializable {
 
     @FXML
@@ -73,13 +76,13 @@ public class editAppointmentController implements Initializable {
     }
 
     /**
-     * initData
+     * custerDataPass
      * takes passed object from previous stage and populates it in this stage
      *
      * @param selectedAppointment appt from previous stage
      * @throws SQLException
      */
-    public void initData(Appointment selectedAppointment) throws SQLException {
+    public void custerDataPass(Appointment selectedAppointment) throws SQLException {
 
 
         // get the values to populate into the Date picker

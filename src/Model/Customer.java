@@ -3,6 +3,9 @@ package Model;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+/**
+ * This class is the model for the Customer object
+ */
 public class Customer {
 
     private Integer ID;

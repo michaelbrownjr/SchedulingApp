@@ -21,6 +21,10 @@ import java.sql.SQLException;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+/**
+ * This class allows the user to edit a Customer's information in a different view,
+ * reflected on the Customer view.
+ */
 public class editCustomerController implements Initializable {
 
     @FXML
@@ -45,13 +49,13 @@ public class editCustomerController implements Initializable {
     Button backButton;
 
     /**
-     * initData
+     * custerDataPass
      * Takes object from previous stage and populates it on this stage
      *
      * @param selectedCustomer Customer object from previous stage
      * @throws SQLException
      */
-    public void initData(Customer selectedCustomer) throws SQLException {
+    public void custerDataPass(Customer selectedCustomer) throws SQLException {
 
         countryComboBox.setItems(CustomerDB.getAllCountries());
         countryComboBox.getSelectionModel().select(selectedCustomer.getCountry());
@@ -69,8 +73,7 @@ public class editCustomerController implements Initializable {
 
     /**
      * screenChange
-     * loads new stage
-     *
+     * loads new view
      * @param event Button Click
      * @param switchPath path to new stage
      * @throws IOException
@@ -161,7 +164,7 @@ public class editCustomerController implements Initializable {
         exit.setHeaderText("Confirm");
 
 
-
+        // Lambda Expression -- Confirm user doesn't want to save before going back
         exit.showAndWait().ifPresent((response -> {
             if (response == clickYes) {
                 try {
@@ -172,7 +175,6 @@ public class editCustomerController implements Initializable {
             }
         }));
 
-//        screenChange(event, "/View/customerView.fxml");
     }
 
     /**

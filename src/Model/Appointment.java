@@ -2,6 +2,10 @@ package Model;
 
 import java.sql.Timestamp;
 
+/**
+ * This class is the model for the Appointment view carrying all the elements that
+ * will be manipulated by the user.
+ */
 public class Appointment {
     private final Integer appointmentID;
     private final String title;

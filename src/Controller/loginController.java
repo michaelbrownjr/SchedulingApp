@@ -1,10 +1,8 @@
 package Controller;
 
-import Helper.Alerts;
 import Helper.Logger;
 import Model.Appointment;
 import Model.LogonSession;
-import Model.UserDB;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -22,13 +20,12 @@ import java.sql.SQLException;
 import java.time.ZoneId;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.ResourceBundle;
-/*
-* LoginPageController
-*
-* @author Michael Brown
-* */
+
+
+/**
+ * This class shows the login screen where the user can login, clear, or quit the app.
+ */
 public class loginController implements Initializable {
 
     @ FXML
@@ -52,7 +49,7 @@ public class loginController implements Initializable {
 
     /**
      * screenChange
-     * loads new stage
+     * loads new view
      * @param event Button Click
      * @param switchPath path to new stage
      * @throws IOException
@@ -84,7 +81,7 @@ public class loginController implements Initializable {
         boolean logon = LogonSession.login(userName, password);
 
         // Log Login attempt
-        Logger.log(userName, logon, "Happy Days");
+        Logger.log(userName, logon);
 
         if (logon) {
 

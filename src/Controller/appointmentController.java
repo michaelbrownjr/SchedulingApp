@@ -27,6 +27,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+/**
+ * This class populates the view with all of the appointments on the schedule
+ * with buttons to edit, delete, and appointments. Also has the following buttons: Reports,
+ * Customers, and LogOut.
+ */
 public class appointmentController implements Initializable {
 
     @FXML
@@ -451,7 +456,7 @@ public class appointmentController implements Initializable {
         Scene scene = new Scene(parent);
         // get the controller and load our selected appointment into it
         editAppointmentController controller = loader.getController();
-        controller.initData(selectedAppointment);
+        controller.custerDataPass(selectedAppointment);
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(scene);
 

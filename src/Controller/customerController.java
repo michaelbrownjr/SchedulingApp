@@ -22,6 +22,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+/**
+ * This class shows all of the customers in the view. Has the following buttons: add,
+ * edit, delete, and back to navigate and/or manipulate the customer list.
+ */
 public class customerController implements Initializable {
     @FXML
     Button addButton;
@@ -121,7 +125,7 @@ public class customerController implements Initializable {
         Scene scene = new Scene(parent);
         // get the controller and load our selected appointment into it
         editCustomerController controller = loader.getController();
-        controller.initData(selectedCustomer);
+        controller.custerDataPass(selectedCustomer);
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(scene);
 

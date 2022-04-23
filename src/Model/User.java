@@ -1,5 +1,8 @@
 package Model;
 
+/**
+ * This class gathers the username and password from login.
+ */
 public class User {
     private String userName;
     private final Integer userID;
