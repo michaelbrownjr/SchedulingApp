@@ -59,6 +59,7 @@ public class AppointmentDB {
                 Integer contactID = results.getInt("Contact_ID");
                 String contactName = results.getString("Contact_Name");
 
+
                 // populate into an appt object
                 Appointment newAppt = new Appointment(
                         appointmentID, title, description, location, type, startDateTime, endDateTime,
@@ -157,6 +158,7 @@ public class AppointmentDB {
             Integer userID = results.getInt("User_ID");
             Integer contactID = results.getInt("Contact_ID");
             String contactName = results.getString("Contact_Name");
+
 
             // populate into an appt object
             Appointment newAppt = new Appointment(
@@ -371,8 +373,12 @@ public class AppointmentDB {
             String description = results.getString("Description");
             String location = results.getString("Location");
             String type = results.getString("Type");
+
+            // Think about using LocalDateTime
             Timestamp startDateTime = results.getTimestamp("Start");
             Timestamp endDateTime = results.getTimestamp("End");
+
+            // Comment out and dummy objects that aren't being used <--
             Timestamp createdDate = results.getTimestamp("Create_Date");
             String createdBy = results.getString("Created_by");
             Timestamp  lastUpdateDateTime = results.getTimestamp("Last_Update");

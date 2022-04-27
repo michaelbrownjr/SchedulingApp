@@ -156,7 +156,7 @@ public class addAppointmentController implements Initializable {
 
         // INPUT VALIDATION: check that business hours are valid and there aren't any double booked customers.
         validBusinessHours = validateBusinessHours(startDateTime, endDateTime, apptDate);
-        validOverlap = validateCustomerOverlap(customerID, zonedStartDateTime, zonedEndDateTime, apptDate);
+        validOverlap = validateCustomerOverlap(customerID, startDateTime, endDateTime, apptDate);
 
         // INPUT VALIDATION: set corresponding error for user
         if (!validBusinessHours) {
@@ -264,26 +264,24 @@ public class addAppointmentController implements Initializable {
      * ensures customer does not have overlapping appointments
      *
      * @param inputCustomerID customer ID of new appointment
-     * @param zonedStartDateTime start dateime of appointment
-     * @param zonedEndDateTime end datetime of appointment
+     * @param startDateTime start dateime of appointment
+     * @param endDateTime end datetime of appointment
      * @param apptDate date of appointment
      *
      * @return Boolean indicating valid input
      * @throws SQLException
      */
-    public Boolean validateCustomerOverlap(Integer inputCustomerID, ZonedDateTime zonedStartDateTime,
-                                           ZonedDateTime zonedEndDateTime, LocalDate apptDate) throws SQLException {
+    public Boolean validateCustomerOverlap(Integer inputCustomerID, LocalDateTime startDateTime,
+                                           LocalDateTime endDateTime, LocalDate apptDate) throws SQLException {
 
         ObservableList<Appointment> possibleConflicts = AppointmentDB.getCustomerFilteredAppointments(apptDate,
                 inputCustomerID);
 
-//        System.out.println("Started ZonedDateTime: " + zonedStartDateTime);
-//        System.out.println("Ended ZonedDateTime: " + zonedEndDateTime);
 
-        // Converts the passed startDateTime and endDateTime variables back to LocalDate Time
-        // to compare them in the bottom condition statements
-        LocalDateTime startDateTime = zonedStartDateTime.toLocalDateTime();
-        LocalDateTime endDateTime = zonedEndDateTime.toLocalDateTime();
+//        // Converts the passed startDateTime and endDateTime variables back to LocalDate Time
+//        // to compare them in the bottom condition statements
+//        LocalDateTime startDateTime = zonedStartDateTime.toLocalDateTime();
+//        LocalDateTime endDateTime = zonedEndDateTime.toLocalDateTime();
 
                 
         
