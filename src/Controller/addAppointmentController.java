@@ -108,10 +108,11 @@ public class addAppointmentController implements Initializable {
         Integer contactID = ContactDB.findContactID(contactName);
 
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("H:mm");
 
 
-        // INPUT VALIDATION: catch parsing errors for start and enddatetime
+
+        // INPUT VALIDATION: catch parsing errors for start and end datetime
         try {
             startDateTime = LocalDateTime.of(apptDatePicker.getValue(),
                     LocalTime.parse(startTimeTextBox.getText(), formatter));
@@ -146,9 +147,16 @@ public class addAppointmentController implements Initializable {
 
         }
 
-        // INPUT VALIDATION: check that business hours are valid and there is no double booked customers.
+        zonedStartDateTime = ZonedDateTime.of(startDateTime, LogonSession.getUserTimeZone());
+        zonedEndDateTime = ZonedDateTime.of(endDateTime, LogonSession.getUserTimeZone());
+
+        // Convert to UTC
+        zonedStartDateTime = zonedStartDateTime.withZoneSameInstant(ZoneOffset.UTC);
+        zonedEndDateTime = zonedEndDateTime.withZoneSameInstant(ZoneOffset.UTC);
+
+        // INPUT VALIDATION: check that business hours are valid and there aren't any double booked customers.
         validBusinessHours = validateBusinessHours(startDateTime, endDateTime, apptDate);
-        validOverlap = validateCustomerOverlap(customerID, startDateTime, endDateTime, apptDate);
+        validOverlap = validateCustomerOverlap(customerID, zonedStartDateTime, zonedEndDateTime, apptDate);
 
         // INPUT VALIDATION: set corresponding error for user
         if (!validBusinessHours) {
@@ -168,13 +176,8 @@ public class addAppointmentController implements Initializable {
 
         }
         else {
-            zonedStartDateTime = ZonedDateTime.of(startDateTime, LogonSession.getUserTimeZone());
-            zonedEndDateTime = ZonedDateTime.of(endDateTime, LogonSession.getUserTimeZone());
             String loggedOnUserName = LogonSession.getCurrentUser().getUsername();
 
-            // Convert to UTC
-            zonedStartDateTime = zonedStartDateTime.withZoneSameInstant(ZoneOffset.UTC);
-            zonedEndDateTime = zonedEndDateTime.withZoneSameInstant(ZoneOffset.UTC);
 
 
             Boolean success = AppointmentDB.addAppointment(title, description, location, type, zonedStartDateTime,
@@ -261,19 +264,29 @@ public class addAppointmentController implements Initializable {
      * ensures customer does not have overlapping appointments
      *
      * @param inputCustomerID customer ID of new appointment
-     * @param startDateTime start dateime of appointment
-     * @param endDateTime end datetime of appointment
+     * @param zonedStartDateTime start dateime of appointment
+     * @param zonedEndDateTime end datetime of appointment
      * @param apptDate date of appointment
      *
      * @return Boolean indicating valid input
      * @throws SQLException
      */
-    public Boolean validateCustomerOverlap(Integer inputCustomerID, LocalDateTime startDateTime,
-                                           LocalDateTime endDateTime, LocalDate apptDate) throws SQLException {
+    public Boolean validateCustomerOverlap(Integer inputCustomerID, ZonedDateTime zonedStartDateTime,
+                                           ZonedDateTime zonedEndDateTime, LocalDate apptDate) throws SQLException {
 
         ObservableList<Appointment> possibleConflicts = AppointmentDB.getCustomerFilteredAppointments(apptDate,
                 inputCustomerID);
 
+//        System.out.println("Started ZonedDateTime: " + zonedStartDateTime);
+//        System.out.println("Ended ZonedDateTime: " + zonedEndDateTime);
+
+        // Converts the passed startDateTime and endDateTime variables back to LocalDate Time
+        // to compare them in the bottom condition statements
+        LocalDateTime startDateTime = zonedStartDateTime.toLocalDateTime();
+        LocalDateTime endDateTime = zonedEndDateTime.toLocalDateTime();
+
+                
+        
         if (possibleConflicts.isEmpty()) {
             return true;
         }
@@ -282,12 +295,14 @@ public class addAppointmentController implements Initializable {
                 LocalDateTime conflictStart = conflictAppt.getStartDateTime().toLocalDateTime();
                 LocalDateTime conflictEnd = conflictAppt.getEndDateTime().toLocalDateTime();
 
-
                 if (conflictStart.isBefore(startDateTime) & conflictEnd.isAfter(endDateTime)) {
                     return false;
                 }
 
                 if (conflictStart.isBefore(endDateTime) & conflictStart.isAfter(startDateTime)) {
+                    return false;
+                }
+                if (conflictStart.isEqual(startDateTime) || conflictEnd.isEqual(endDateTime)){
                     return false;
                 }
 
