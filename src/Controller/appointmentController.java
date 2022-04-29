@@ -359,9 +359,11 @@ public class appointmentController implements Initializable {
             // Prompt alert for deletion confirmation
             ButtonType clickYes = ButtonType.YES;
             ButtonType clickNo = ButtonType.NO;
-            Alert deleteAlert = new Alert(Alert.AlertType.WARNING, "Are you sure you want to delete Appointment: "
-                    + selectedAppointment.getAppointmentID() + " ?", clickYes, clickNo);
+            Alert deleteAlert = new Alert(Alert.AlertType.WARNING, "Are you sure you want to delete Appointment ID: "
+                    + selectedAppointment.getAppointmentID() + " with Type: \"" + selectedAppointment.getType() + "\"?", clickYes, clickNo);
             Optional<ButtonType> result = deleteAlert.showAndWait();
+
+            String test = "\"Hello World!\"";
 
             // if confirmed, delete selected appointment
             if (result.get() == ButtonType.YES) {

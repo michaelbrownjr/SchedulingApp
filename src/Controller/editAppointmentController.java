@@ -193,6 +193,9 @@ public class editAppointmentController implements Initializable {
                 if (conflictStart.isBefore(endDateTime) & conflictStart.isAfter(startDateTime)) {
                     return false;
                 }
+                if (conflictStart.isEqual(startDateTime) || conflictEnd.isEqual(endDateTime)){
+                    return false;
+                }
                 // ConflictAppt end time falls anywhere in the new appt
                 return !(conflictEnd.isBefore(endDateTime) & conflictEnd.isAfter(startDateTime));
 
