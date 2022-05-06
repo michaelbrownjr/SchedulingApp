@@ -1,16 +1,12 @@
-# Performance Assessment: Software II -- Advanced Java Concepts - QAM2
-
 # Scheduling Appointment App
 
 - Author: Michael Brown
-- ID: 000861887
-- Email: mbro549@wgu.edu
 - Submission Date: April 23rd 2022
 - Application version 1.0
 
 ## PURPOSE:
 
-Develop a GUI-based sscheduling desktop application using a provided MySQL database to pull data from.
+Develop a GUI-based scheduling desktop application using a provided MySQL database to pull data from.
 
 ## Specs to run Application:
 
