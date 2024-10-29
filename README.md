@@ -1,7 +1,7 @@
 # Scheduling Appointment App
 
 - Author: Michael Brown
-- Submission Date: April 23rd 2022
+- Completion Date: April 23rd 2022
 - Application version 1.0
 
 ## PURPOSE:
